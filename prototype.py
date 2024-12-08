@@ -9,13 +9,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class FootyStatsAPIError(Exception):
+class FootyStatsClientError(Exception):
     """Custom exception for FootyStats API errors."""
 
     pass
 
 
-class FootyStatsAPI:
+class FootyStatsClient:
     def __init__(self, api_key: str):
         """
         Initialize the FootyStats API client.
@@ -44,15 +44,15 @@ class FootyStatsAPI:
             response.raise_for_status()
             data = response.json()
             if "error" in data:
-                raise FootyStatsAPIError(data["error"])
+                raise FootyStatsClientError(data["error"])
             return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Request failed: {e}")
-            raise FootyStatsAPIError(
+            raise FootyStatsClientError(
                 "Failed to communicate with FootyStats API."
             ) from e
 
-    @lru_cache(maxsize=128)
+    # @lru_cache(maxsize=128)
     def get_league_table(self, league_id: int) -> pd.DataFrame:
         """
         Fetch and process the league table for a specific league.
@@ -64,7 +64,7 @@ class FootyStatsAPI:
         params = {"league_id": league_id}
         data = self.make_request(endpoint, params)
 
-        # Extract league table
+        # Parse table data
         table = data.get("data", {}).get("league_table", [])
         if not table:
             logger.warning("No league table data available.")
@@ -72,6 +72,17 @@ class FootyStatsAPI:
 
         # Convert to DataFrame
         df = pd.DataFrame(table)
+
+        df = df[
+            [
+                "position",
+                "name",
+                "matchesPlayed",
+                "seasonWins_overall",
+                "seasonDraws_overall",
+                "seasonLosses_overall",
+            ]
+        ]
 
         # Add additional processing if needed (e.g., sorting, filtering)
         df = df.sort_values(by="position").reset_index(drop=True)
@@ -86,7 +97,7 @@ class FootyStatsAPI:
         if df.empty:
             logger.info("No data available to display.")
         else:
-            print(df.head())  # Show the first few rows for clarity
+            print(df.head())
 
 
 # Example usage
@@ -98,10 +109,10 @@ if __name__ == "__main__":
         raise ValueError(
             "API key not found. Please set the FOOTYSTATS_API_KEY environment variable."
         )
-    else:
-        footy_api = FootyStatsAPI(api_key)
 
-        # current league_id for Premier League
-        pl_league_id = 12325
-        league_table_df = footy_api.get_league_table(pl_league_id)
-        footy_api.display_dataframe(league_table_df)
+    footy_api = FootyStatsClient(api_key)
+
+    # current league_id for Premier League
+    pl_league_id = 12325
+    league_table_df = footy_api.get_league_table(pl_league_id)
+    footy_api.display_dataframe(league_table_df)
