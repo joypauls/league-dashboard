@@ -51,6 +51,7 @@ class FootyStatsClient:
             response = requests.get(url, params=params)
             response.raise_for_status()
             data = response.json()
+            print(response.url)
             if "error" in data:
                 raise FootyStatsClientError(data["error"])
             return data
@@ -60,12 +61,47 @@ class FootyStatsClient:
                 "Failed to communicate with FootyStats API."
             ) from e
 
+    def get_league_list(self) -> pd.DataFrame:
+        """
+        Fetch and process chosen leagues/seasons. Currently cannot fetch all leagues.
+
+        :param season_id: The ID of the league/season
+        :return: DataFrame containing the league table
+        """
+        endpoint = "league-list"
+        params = {"chosen_leagues_only": "true"}
+        data = self.make_request(endpoint, params)
+
+        # TODO: change to paginated approach! currently only returns first page. fine with few leagues.
+        leagues = data.get("data", {})
+        if not leagues:
+            logger.warning("No league data available.")
+            return pd.DataFrame()
+
+        rows = []
+        for league in leagues:
+            for season in league["season"]:
+                rows.append(
+                    {
+                        "name": league["name"],
+                        "image": league["image"],
+                        "country": league["country"],
+                        "season_id": season["id"],
+                        "season_year": season["year"],
+                        # "season_country": season["country"],
+                    }
+                )
+
+        df = pd.DataFrame(rows)
+        # df = df.sort_values(by="position").reset_index(drop=True)
+        return df
+
     # @lru_cache(maxsize=128)
     def get_league_table(self, season_id: int) -> pd.DataFrame:
         """
         Fetch and process the league table for a specific league.
 
-        :param league_id: The ID of the league
+        :param season_id: The ID of the league/season
         :return: DataFrame containing the league table
         """
         endpoint = "league-tables"
@@ -86,8 +122,8 @@ class FootyStatsClient:
         """
         Fetch and process the players for a specific league.
 
-        :param league_id: The ID of the league
-        :return: DataFrame containing the league table
+        :param season_id: The ID of the league/season
+        :return: DataFrame containing the league players
         """
         endpoint = "league-players"
 
@@ -112,11 +148,10 @@ class FootyStatsClient:
             page += 1
 
         df = pd.concat(page_data)
-        # df = df.sort_values(by="position").reset_index(drop=True)
         return df
 
 
-def clean_league_table(df: pd.DataFrame) -> pd.DataFrame:
+def clean_league_table(table_df: pd.DataFrame) -> pd.DataFrame:
     col_map = {
         "position": "Position",
         "cleanName": "Team",
@@ -129,27 +164,22 @@ def clean_league_table(df: pd.DataFrame) -> pd.DataFrame:
         "seasonConceded": "GA",
         "seasonGoalDifference": "GD",
     }
-    df = df[list(col_map.keys())]
-    df = df.rename(columns=col_map)
-    return df
+    table_df = table_df[list(col_map.keys())]
+    table_df = table_df.rename(columns=col_map)
+    return table_df
 
 
-def clean_league_players(df: pd.DataFrame) -> pd.DataFrame:
+def clean_league_players(players_df: pd.DataFrame) -> pd.DataFrame:
     col_map = {
         "known_as": "Name",
         "goals_overall": "Goals",
-        # "points": "Points",
-        # "matchesPlayed": "Played",
-        # "seasonWins_overall": "W",
-        # "seasonDraws_overall": "D",
-        # "seasonLosses_overall": "L",
-        # "seasonGoals": "GF",
-        # "seasonConceded": "GA",
-        # "seasonGoalDifference": "GD",
+        "assists_overall": "Assists",
+        "minutes_played_overall": "Minutes",
+        "appearances_overall": "Appearances",
     }
-    df = df[list(col_map.keys())]
-    df = df.rename(columns=col_map)
-    return df
+    players_df = players_df[list(col_map.keys())]
+    players_df = players_df.rename(columns=col_map)
+    return players_df
 
 
 def filter_top_scorers(df: pd.DataFrame) -> pd.DataFrame:
@@ -216,15 +246,22 @@ if __name__ == "__main__":
     footy_api = FootyStatsClient(api_key)
     league_table_df = footy_api.get_league_table(CURRENT_PL_LEAGUE_ID)
     league_players_df = footy_api.get_league_players(CURRENT_PL_LEAGUE_ID)
+    leagues_df = footy_api.get_league_list()
 
     # league table
-    league_table_df = clean_league_table(league_table_df)
-    display_dataframe(league_table_df, f"Premier League Table {CURRENT_PL_SEASON}")
+    display_dataframe(
+        clean_league_table(league_table_df), f"Premier League Table {CURRENT_PL_SEASON}"
+    )
 
     # league players
-    league_players_df = clean_league_players(league_players_df)
-    print(league_players_df.shape)
     display_dataframe(
-        filter_top_scorers(league_players_df),
+        filter_top_scorers(clean_league_players(league_players_df)),
         f"Premier League Players {CURRENT_PL_SEASON}",
+    )
+
+    print(leagues_df.shape)
+    # league players
+    display_dataframe(
+        leagues_df.head(10),
+        "Leagues",
     )
