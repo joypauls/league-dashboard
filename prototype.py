@@ -65,6 +65,8 @@ class FootyStatsClient:
         """
         Fetch and process chosen leagues/seasons. Currently cannot fetch all leagues.
 
+        Note: when chosen_leagues_only is set to false, the API has different fields?!
+
         :param season_id: The ID of the league/season
         :return: DataFrame containing the league table
         """
@@ -93,7 +95,19 @@ class FootyStatsClient:
                 )
 
         df = pd.DataFrame(rows)
-        # df = df.sort_values(by="position").reset_index(drop=True)
+        df = df.sort_values(by=["name", "season_year"]).reset_index(drop=True)
+        df["season_year"] = df["season_year"].astype(str)
+        df["season_year"] = df["season_year"].where(
+            df["season_year"].str.len() != 8,  # Condition: length not 8
+            df["season_year"].str[:4]
+            + "-"
+            + df["season_year"].str[4:],  # Transformation
+        )
+        return df
+
+    def get_current_leagues(self) -> pd.DataFrame:
+        df = self.get_league_list()
+        df = df.loc[df.groupby("name")["season_year"].idxmax()]
         return df
 
     # @lru_cache(maxsize=128)
@@ -246,7 +260,8 @@ if __name__ == "__main__":
     footy_api = FootyStatsClient(api_key)
     league_table_df = footy_api.get_league_table(CURRENT_PL_LEAGUE_ID)
     league_players_df = footy_api.get_league_players(CURRENT_PL_LEAGUE_ID)
-    leagues_df = footy_api.get_league_list()
+    # leagues_df = footy_api.get_league_list()
+    leagues_df = footy_api.get_current_leagues()
 
     # league table
     display_dataframe(
@@ -259,9 +274,8 @@ if __name__ == "__main__":
         f"Premier League Players {CURRENT_PL_SEASON}",
     )
 
-    print(leagues_df.shape)
     # league players
     display_dataframe(
         leagues_df.head(10),
-        "Leagues",
+        "Leagues and Seasons",
     )
