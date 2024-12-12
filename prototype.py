@@ -51,7 +51,6 @@ class FootyStatsClient:
             response = requests.get(url, params=params)
             response.raise_for_status()
             data = response.json()
-            print(response.url)
             if "error" in data:
                 raise FootyStatsClientError(data["error"])
             return data
@@ -105,7 +104,7 @@ class FootyStatsClient:
         )
         return df
 
-    def get_current_leagues(self) -> pd.DataFrame:
+    def get_current_seasons(self) -> pd.DataFrame:
         df = self.get_league_list()
         df = df.loc[df.groupby("name")["season_year"].idxmax()]
         return df
@@ -141,7 +140,7 @@ class FootyStatsClient:
         """
         endpoint = "league-players"
 
-        page_data = []
+        pages = []
         page = 1
         has_more_data = True
         while has_more_data:
@@ -155,13 +154,13 @@ class FootyStatsClient:
                 return pd.DataFrame()
 
             df = pd.DataFrame(table)
-            page_data.append(df)
+            pages.append(df)
 
             pagination_data = data.get("pager", {})
             has_more_data = page < pagination_data.get("max_page", page)
             page += 1
 
-        df = pd.concat(page_data)
+        df = pd.concat(pages)
         return df
 
 
@@ -261,7 +260,7 @@ if __name__ == "__main__":
     league_table_df = footy_api.get_league_table(CURRENT_PL_LEAGUE_ID)
     league_players_df = footy_api.get_league_players(CURRENT_PL_LEAGUE_ID)
     # leagues_df = footy_api.get_league_list()
-    leagues_df = footy_api.get_current_leagues()
+    leagues_df = footy_api.get_current_seasons()
 
     # league table
     display_dataframe(
