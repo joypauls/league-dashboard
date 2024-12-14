@@ -1,4 +1,4 @@
-# premier-league-stats
+# League Dashboard
 
 Requires a FootyStats API key.
 
