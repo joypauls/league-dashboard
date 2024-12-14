@@ -102,6 +102,7 @@ class FootyStatsClient:
             + "-"
             + df["season_year"].str[4:],  # Transformation
         )
+        df["season_year_start"] = df["season_year"].str[:4]
         return df
 
     def get_current_seasons(self) -> pd.DataFrame:
@@ -275,6 +276,6 @@ if __name__ == "__main__":
 
     # league players
     display_dataframe(
-        leagues_df.head(10),
+        leagues_df,
         "Leagues and Seasons",
     )

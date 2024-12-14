@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "league-dashboard"
+name = "leaguedash"
 version = "0.1.0"
 description = ""
 authors = ["joypauls <joypaulsen3@gmail.com>"]
