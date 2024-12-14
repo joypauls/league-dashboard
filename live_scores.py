@@ -3,10 +3,14 @@ import logging
 import os
 from typing import Dict, List, Optional
 from datetime import datetime
+
+# import numpy as np
 import pandas as pd
-from functools import lru_cache
+
+# from functools import lru_cache
 from rich.console import Console
 from rich.table import Table
+from rich import box
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -62,14 +66,44 @@ class FootballDataClient:
             ) from e
 
 
-def display_dataframe(df: pd.DataFrame, title: str):
-    console = Console()
+def display_dataframe(console: Console, df: pd.DataFrame, title: str):
     table = Table(title=title)
 
     for col in df.columns:
         table.add_column(col)
     for index, row in df.iterrows():
         table.add_row(*[str(x) for x in row])
+
+    console.print(table)
+
+
+def display_score_table(console: Console, df: pd.DataFrame, title: str):
+    table = Table(title=title, box=box.HORIZONTALS)
+
+    table.add_column("home", justify="right")
+    table.add_column("score", justify="center")
+    table.add_column("away", justify="left")
+    table.add_column("time", justify="left")
+    # just for debugging
+    table.add_column("state", justify="left")
+
+    for index, row in df.iterrows():
+
+        score_display = f"{row['home_score']} - {row['away_score']}"
+        time_display = row["display_minutes"]
+        if row["clean_status"] == "Upcoming":
+            score_display = ""
+            time_display = ""
+        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
+            time_display = row["clean_status"]
+
+        table.add_row(
+            row["home_team"],
+            score_display,
+            row["away_team"],
+            time_display,
+            row["clean_status"],
+        )
 
     console.print(table)
 
@@ -90,10 +124,48 @@ if __name__ == "__main__":
 
     today = datetime.now().strftime("%Y-%m-%d")
 
-    data = fbd_api.make_request(
-        "/v4/competitions/PL/matches",
-        params={"dateFrom": today, "dateTo": today},
-    )
+    # data = fbd_api.make_request(
+    #     "/v4/competitions/PL/matches",
+    #     params={"dateFrom": today, "dateTo": today},
+    # )
+
+    import pickle
+
+    # with open("live_matches_full_20251214.pkl", "wb") as file:
+    #     pickle.dump(data, file)
+
+    with open("live_matches_half_20251214.pkl", "rb") as file:
+        data = pickle.load(file)
+
+    def convert_score(score: Optional[int]) -> str:
+        if pd.isna(score):
+            return "-"
+        return str(int(score))
+
+    def convert_status(status: Optional[str]) -> str:
+        if status == "IN_PLAY":
+            return "Live"
+        if status == "PAUSED":
+            return "HT"
+        if status == "FINISHED":
+            return "FT"
+        if status == "TIMED":
+            return "Upcoming"
+        if status == "TIMED":
+            return "Upcoming"
+        return status
+
+    def create_display_minutes(
+        minutes: Optional[int], injury_time: Optional[int]
+    ) -> str:
+        # print(type(minutes), type(injury_time))
+        if pd.isna(minutes):
+            return "-"
+        elif pd.isna(injury_time):
+            return f"{minutes}'"
+        return f"{minutes}+{injury_time}'"
+
+    #     return f"{score['fullTime']['home']} - {score['fullTime']['away']}
 
     matches = data.get("matches", [])
     matches_flat = []
@@ -101,14 +173,48 @@ if __name__ == "__main__":
         matches_flat.append(
             {
                 "home_team": match["homeTeam"]["shortName"],
-                "away_team": match["awayTeam"]["shortName"],
                 "home_score": match["score"]["fullTime"]["home"],
                 "away_score": match["score"]["fullTime"]["away"],
+                "away_team": match["awayTeam"]["shortName"],
                 "status": match["status"],
-                "utc_date": match["utcDate"],
+                "minute": match["minute"],
+                "injury_time": match["injuryTime"],
+                # "utc_date": match["utcDate"],
             }
         )
 
     df = pd.DataFrame(matches_flat)
 
-    display_dataframe(df, "Today's Matches")
+    # formatting of dataset
+    # nullable integers for score
+    df["home_score"] = df["home_score"].astype("Int64")
+    df["away_score"] = df["away_score"].astype("Int64")
+    df["minute"] = df["minute"].astype("Int64")
+    df["injury_time"] = df["injury_time"].astype("Int64")
+    # print(df.dtypes)
+
+    # convert for display
+    # df["home_score"] = df["home_score"].apply(convert_score)
+    # df["away_score"] = df["away_score"].apply(convert_score)
+    df["clean_status"] = df["status"].apply(convert_status)
+    df["display_minutes"] = df.apply(
+        lambda row: create_display_minutes(row["minute"], row["injury_time"]), axis=1
+    )
+
+    status_order = ["Live", "HT", "FT", "Upcoming"]
+    # df = df.sort_values(
+    #     by="clean_status", key=lambda col: col.apply(lambda x: status_order.index(x))
+    # )
+    df = df.sort_values(
+        by=["clean_status", "home_team"],
+        key=lambda col: (
+            col
+            if col.name == "home_team"
+            else col.apply(lambda x: status_order.index(x))
+        ),
+    )
+
+    console = Console()
+    console.print("⚽ League Dashboard - Matches\n")
+    # display_dataframe(console, df, "Today")
+    display_score_table(console, df, "Today")
