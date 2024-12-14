@@ -11,6 +11,7 @@ import pandas as pd
 from rich.console import Console
 from rich.table import Table
 from rich import box
+from rich.text import Text
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -80,12 +81,12 @@ def display_dataframe(console: Console, df: pd.DataFrame, title: str):
 def display_score_table(console: Console, df: pd.DataFrame, title: str):
     table = Table(title=title, box=box.HORIZONTALS)
 
-    table.add_column("home", justify="right")
-    table.add_column("score", justify="center")
-    table.add_column("away", justify="left")
-    table.add_column("time", justify="left")
+    table.add_column("Home", justify="right")
+    table.add_column("Score", justify="center")
+    table.add_column("Away", justify="left")
+    table.add_column("Time", justify="left")
     # just for debugging
-    table.add_column("state", justify="left")
+    # table.add_column("state", justify="left")
 
     for index, row in df.iterrows():
 
@@ -97,12 +98,25 @@ def display_score_table(console: Console, df: pd.DataFrame, title: str):
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
             time_display = row["clean_status"]
 
+        home_display = Text(row["home_team"])
+        away_display = Text(row["away_team"])
+        if not pd.isna(row["home_score"]):
+            if row["home_score"] > row["away_score"]:
+                home_display.stylize("orange1")
+                away_display.stylize("blue")
+            elif row["home_score"] < row["away_score"]:
+                home_display.stylize("blue")
+                away_display.stylize("orange1")
+            else:
+                home_display.stylize("blue")
+                away_display.stylize("blue")
+
         table.add_row(
-            row["home_team"],
+            home_display,
             score_display,
-            row["away_team"],
+            away_display,
             time_display,
-            row["clean_status"],
+            # row["clean_status"],
         )
 
     console.print(table)
@@ -118,24 +132,24 @@ if __name__ == "__main__":
 
     # client usage
     fbd_api = FootballDataClient(api_key)
-    # data = fbd_api.make_request(
-    #     "/v4/competitions/PL/matches", params={"status": "LIVE"}
-    # )
+    data = fbd_api.make_request(
+        "/v4/competitions/PL/matches", params={"status": "LIVE"}
+    )
 
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # data = fbd_api.make_request(
-    #     "/v4/competitions/PL/matches",
-    #     params={"dateFrom": today, "dateTo": today},
-    # )
+    data = fbd_api.make_request(
+        "/v4/competitions/PL/matches",
+        params={"dateFrom": today, "dateTo": today},
+    )
 
     import pickle
 
     # with open("live_matches_full_20251214.pkl", "wb") as file:
     #     pickle.dump(data, file)
 
-    with open("live_matches_half_20251214.pkl", "rb") as file:
-        data = pickle.load(file)
+    # with open("live_matches_half_20251214.pkl", "rb") as file:
+    #     data = pickle.load(file)
 
     def convert_score(score: Optional[int]) -> str:
         if pd.isna(score):
@@ -215,6 +229,6 @@ if __name__ == "__main__":
     )
 
     console = Console()
-    console.print("⚽ League Dashboard - Matches\n")
+    console.print(Text("⚽ League Dashboard\n", style="bold"))
     # display_dataframe(console, df, "Today")
-    display_score_table(console, df, "Today")
+    display_score_table(console, df, "Today's Matches")
