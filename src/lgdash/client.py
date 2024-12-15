@@ -73,6 +73,7 @@ class FootballDataClient:
                     "status": match["status"],
                     "minute": match["minute"],
                     "injury_time": match["injuryTime"],
+                    "matchday": match["matchday"],
                     "utc_datetime": match["utcDate"],
                 }
             )
@@ -139,6 +140,11 @@ class FootballDataClient:
         if end_date:
             params["dateTo"] = end_date
         data = self.make_request(endpoint, params=params)
+
+        # import pickle
+
+        # with open("live_matches_midway2_20251215.pkl", "wb") as file:
+        #     pickle.dump(data, file)
 
         matches = data.get("matches", [])
 

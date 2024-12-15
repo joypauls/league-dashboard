@@ -4,6 +4,8 @@ from rich.table import Table
 from rich import box
 from rich.text import Text
 
+from lgdash import __version__ as version
+
 
 def dataframe(console: Console, df: pd.DataFrame, title: str):
     """
@@ -20,6 +22,10 @@ def dataframe(console: Console, df: pd.DataFrame, title: str):
 
 
 def live_scores(console: Console, df: pd.DataFrame, title: str):
+
+    # all matchdays should be equal in this use case
+    matchday = df["matchday"].iloc[0]
+    title = f"{title} (Matchday {matchday})"
     table = Table(title=title, box=box.HORIZONTALS)
 
     table.add_column("Home", justify="right")
@@ -65,6 +71,6 @@ def live_scores(console: Console, df: pd.DataFrame, title: str):
 
 
 def dashboard(console: Console, df: pd.DataFrame, title: str):
-    console.print(Text("⚽ League Dashboard\n", style="bold"))
+    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
     live_scores(console, df, title)
     console.print("")

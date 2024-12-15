@@ -9,7 +9,6 @@ from rich.console import Console
 from rich.table import Table
 from rich import box
 from rich.text import Text
-
 from lgdash.client import FootballDataClient
 import lgdash.display as display
 
@@ -37,7 +36,7 @@ if __name__ == "__main__":
     # with open("live_matches_full_20251214.pkl", "wb") as file:
     #     pickle.dump(data, file)
 
-    # with open("live_matches_half_20251214.pkl", "rb") as file:
+    # with open("live_matches_midway_20251215.pkl", "rb") as file:
     #     data = pickle.load(file)
     #     df = fbd_api._build_matches_df(data["matches"])
 

@@ -11,6 +11,13 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ## Dev Notes
 
+### Version Bump
+
+1. Change in `pyproject.toml`
+2. Change `__version__` variable in`src/lgdash/__init__.py`
+
+Should automate this eventually.
+
 ### TODO
 
 - show start time in system time zone
