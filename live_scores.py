@@ -74,6 +74,42 @@ class FootballDataClient:
             ),
         )
 
+    def _build_matches_df(self, matches: List[Dict]) -> pd.DataFrame:
+        matches_flat = []
+        for match in matches:
+            matches_flat.append(
+                {
+                    "home_team": match["homeTeam"]["shortName"],
+                    "home_team_code": match["homeTeam"]["tla"],
+                    "home_score": match["score"]["fullTime"]["home"],
+                    "away_team": match["awayTeam"]["shortName"],
+                    "away_team_code": match["awayTeam"]["tla"],
+                    "away_score": match["score"]["fullTime"]["away"],
+                    "status": match["status"],
+                    "minute": match["minute"],
+                    "injury_time": match["injuryTime"],
+                    "utc_datetime": match["utcDate"],
+                }
+            )
+        df = pd.DataFrame(matches_flat)
+
+        # format columns
+        df["utc_datetime"] = pd.to_datetime(df["utc_datetime"])
+        # nullable integers
+        df["home_score"] = df["home_score"].astype("Int64")
+        df["away_score"] = df["away_score"].astype("Int64")
+        df["minute"] = df["minute"].astype("Int64")
+        df["injury_time"] = df["injury_time"].astype("Int64")
+
+        # convert values for new columns
+        df["clean_status"] = df["status"].apply(convert_status)
+        df["display_minutes"] = df.apply(
+            lambda row: convert_display_minutes(row["minute"], row["injury_time"]),
+            axis=1,
+        )
+
+        return self._sort_matches(df)
+
     def make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict:
         """
         Make a request to the API.
@@ -120,40 +156,8 @@ class FootballDataClient:
         data = self.make_request(endpoint, params=params)
 
         matches = data.get("matches", [])
-        matches_flat = []
-        for match in matches:
-            matches_flat.append(
-                {
-                    "home_team": match["homeTeam"]["shortName"],
-                    "home_team_code": match["homeTeam"]["tla"],
-                    "home_score": match["score"]["fullTime"]["home"],
-                    "away_team": match["awayTeam"]["shortName"],
-                    "away_team_code": match["awayTeam"]["tla"],
-                    "away_score": match["score"]["fullTime"]["away"],
-                    "status": match["status"],
-                    "minute": match["minute"],
-                    "injury_time": match["injuryTime"],
-                    "utc_datetime": match["utcDate"],
-                }
-            )
-        df = pd.DataFrame(matches_flat)
 
-        # format columns
-        df["utc_datetime"] = pd.to_datetime(df["utc_datetime"])
-        # nullable integers
-        df["home_score"] = df["home_score"].astype("Int64")
-        df["away_score"] = df["away_score"].astype("Int64")
-        df["minute"] = df["minute"].astype("Int64")
-        df["injury_time"] = df["injury_time"].astype("Int64")
-
-        # convert values for new columns
-        df["clean_status"] = df["status"].apply(convert_status)
-        df["display_minutes"] = df.apply(
-            lambda row: convert_display_minutes(row["minute"], row["injury_time"]),
-            axis=1,
-        )
-
-        return self._sort_matches(df)
+        return self._build_matches_df(matches)
 
 
 def display_dataframe(console: Console, df: pd.DataFrame, title: str):
@@ -205,7 +209,6 @@ def display_score_table(console: Console, df: pd.DataFrame, title: str):
             score_display,
             away_display,
             time_display,
-            # row["clean_status"],
         )
 
     console.print(table)
@@ -231,20 +234,20 @@ if __name__ == "__main__":
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
     df = fbd_api.get_matches(today)
-    print(df.dtypes)
 
     # with open("live_matches_full_20251214.pkl", "wb") as file:
     #     pickle.dump(data, file)
 
     # with open("live_matches_half_20251214.pkl", "rb") as file:
     #     data = pickle.load(file)
+    #     df = fbd_api._build_matches_df(data["matches"])
 
     console = Console()
     display_dashboard(console, df, "Today")
 
-    start_dt = today_dt + timedelta(days=1)
-    end_dt = today_dt + timedelta(days=7)
-    start = start_dt.strftime("%Y-%m-%d")
-    end = end_dt.strftime("%Y-%m-%d")
-    upcoming_df = fbd_api.get_matches(start, end)
-    display_score_table(console, upcoming_df, "Upcoming")
+    # start_dt = today_dt + timedelta(days=1)
+    # end_dt = today_dt + timedelta(days=7)
+    # start = start_dt.strftime("%Y-%m-%d")
+    # end = end_dt.strftime("%Y-%m-%d")
+    # upcoming_df = fbd_api.get_matches(start, end)
+    # display_score_table(console, upcoming_df, "Upcoming")
