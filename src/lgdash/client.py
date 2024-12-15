@@ -1,18 +1,8 @@
 import requests
 import logging
-import os
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
-import pickle
-
-# import numpy as np
 import pandas as pd
-
-# from functools import lru_cache
-from rich.console import Console
-from rich.table import Table
-from rich import box
-from rich.text import Text
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
