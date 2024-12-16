@@ -31,14 +31,11 @@ if __name__ == "__main__":
 
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
-    df = fbd_api.get_matches(today)
+    # df = fbd_api.get_matches(today)
 
-    # with open("live_matches_full_20251214.pkl", "wb") as file:
-    #     pickle.dump(data, file)
-
-    # with open("live_matches_midway_20251215.pkl", "rb") as file:
-    #     data = pickle.load(file)
-    #     df = fbd_api._build_matches_df(data["matches"])
+    with open("live_matches_half_20251214.pkl", "rb") as file:
+        data = pickle.load(file)
+        df = fbd_api._build_matches_df(data["matches"])
 
     console = Console()
     display.dashboard(console, df, "Today")

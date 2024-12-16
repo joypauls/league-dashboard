@@ -1,11 +1,25 @@
 # ⚽ League Dashboard
 
-Currently requires a FootyStats API key and football-data.org API key.
+Currently requires a football-data.org API key.
 
 ```
-FOOTYSTATS_API_KEY=<your key here>
 FOOTBALLDATA_API_KEY=<your key here>
 ```
+
+
+## Quick Start
+
+### Install
+
+
+### Get Today's Scores
+
+
+#### How to Read
+
+
+
+
 
 ---
 

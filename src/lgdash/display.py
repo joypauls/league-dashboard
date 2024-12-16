@@ -26,7 +26,7 @@ def live_scores(console: Console, df: pd.DataFrame, title: str):
     # all matchdays should be equal in this use case
     matchday = df["matchday"].iloc[0]
     title = f"{title} (Matchday {matchday})"
-    table = Table(title=title, box=box.HORIZONTALS)
+    table = Table(title=title, box=box.HORIZONTALS, show_header=False)
 
     table.add_column("Home", justify="right")
     table.add_column("Score", justify="center")
@@ -40,8 +40,8 @@ def live_scores(console: Console, df: pd.DataFrame, title: str):
         score_display = f"{row['home_score']} - {row['away_score']}"
         time_display = row["display_minutes"]
         if row["clean_status"] == "Upcoming":
-            score_display = ""
-            time_display = ""
+            score_display = "-"
+            time_display = row["local_time"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
             time_display = row["clean_status"]
 

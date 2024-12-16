@@ -3,6 +3,7 @@ import logging
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 import pandas as pd
+from zoneinfo import ZoneInfo, available_timezones
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -93,6 +94,13 @@ class FootballDataClient:
             lambda row: convert_display_minutes(row["minute"], row["injury_time"]),
             axis=1,
         )
+
+        # dates and times
+        # system_timezone = datetime.now().astimezone().tzname()
+        system_timezone = "US/Central"
+        df["local_datetime"] = df["utc_datetime"].dt.tz_convert(system_timezone)
+        df["local_date"] = df["local_datetime"].dt.strftime("%Y-%m-%d")
+        df["local_time"] = df["local_datetime"].dt.strftime("%H:%M")
 
         return self._sort_matches(df)
 
