@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 import pandas as pd
-from zoneinfo import ZoneInfo, available_timezones
+from tzlocal import get_localzone
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -96,8 +96,8 @@ class FootballDataClient:
         )
 
         # dates and times
-        # system_timezone = datetime.now().astimezone().tzname()
-        system_timezone = "US/Central"
+        system_timezone = get_localzone()
+        logger.debug(f"System timezone detected: {system_timezone}")
         df["local_datetime"] = df["utc_datetime"].dt.tz_convert(system_timezone)
         df["local_date"] = df["local_datetime"].dt.strftime("%Y-%m-%d")
         df["local_time"] = df["local_datetime"].dt.strftime("%H:%M")

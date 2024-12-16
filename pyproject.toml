@@ -10,6 +10,7 @@ python = "^3.13"
 pandas = "^2.2.3"
 requests = "^2.32.3"
 rich = "^13.9.4"
+tzlocal = "^5.2"
 
 [build-system]
 requires = ["poetry-core"]
