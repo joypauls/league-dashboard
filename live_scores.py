@@ -14,7 +14,8 @@ import lgdash.display as display
 
 logging.basicConfig(format="| %(asctime)s | %(name)s | %(levelname)s | %(message)s")
 package_logger = logging.getLogger("lgdash")
-package_logger.setLevel(logging.DEBUG)
+package_logger.setLevel(logging.INFO)
+# package_logger.setLevel(logging.DEBUG)
 
 FBD_ENV_VAR = "FOOTBALLDATA_API_KEY"
 
@@ -32,11 +33,11 @@ if __name__ == "__main__":
 
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
-    # df = fbd_api.get_matches(today)
+    df = fbd_api.get_matches()
 
-    with open("live_matches_half_20251214.pkl", "rb") as file:
-        data = pickle.load(file)
-        df = fbd_api._build_matches_df(data["matches"])
+    # with open("live_matches_half_20251214.pkl", "rb") as file:
+    #     data = pickle.load(file)
+    #     df = fbd_api._build_matches_df(data["matches"])
 
     console = Console()
     display.dashboard(console, df, "Today")
@@ -48,5 +49,5 @@ if __name__ == "__main__":
     # upcoming_df = fbd_api.get_matches(start, end)
     # display_score_table(console, upcoming_df, "Upcoming")
 
-    standings_df = fbd_api.get_standings()
-    print(standings_df)
+    # standings_df = fbd_api.get_standings()
+    # display.dataframe(console, standings_df, "Standings")

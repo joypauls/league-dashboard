@@ -7,7 +7,7 @@ from tzlocal import get_localzone
 
 logger = logging.getLogger(__name__)
 
-MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming"]
+MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
 
 
 def convert_status(status: Optional[str]) -> str:
@@ -19,8 +19,10 @@ def convert_status(status: Optional[str]) -> str:
         return "FT"
     if status == "TIMED":
         return "Upcoming"
-    if status == "TIMED":
+    if status == "SCHEDULED":
         return "Upcoming"
+    if status == "POSTPONED":
+        return "Postponed"
     return status
 
 
@@ -86,6 +88,7 @@ class FootballDataClient:
         df["away_score"] = df["away_score"].astype("Int64")
         df["minute"] = df["minute"].astype("Int64")
         df["injury_time"] = df["injury_time"].astype("Int64")
+        df["matchday"] = df["matchday"].astype("Int64")
 
         # convert values for new columns
         df["clean_status"] = df["status"].apply(convert_status)
@@ -106,17 +109,16 @@ class FootballDataClient:
     def _build_standings_df(self, standings: List[Dict]) -> pd.DataFrame:
         standings_flat = []
         for team in standings:
-            print(team)
             standings_flat.append(
                 {
                     "position": team["position"],
                     "team": team["team"]["shortName"],
                     "tla": team["team"]["tla"],
+                    "points": team["points"],
                     "played": team["playedGames"],
                     "wins": team["won"],
                     "draws": team["draw"],
                     "losses": team["lost"],
-                    "points": team["points"],
                     "goals_for": team["goalsFor"],
                     "goals_against": team["goalsAgainst"],
                     "goal_difference": team["goalDifference"],
@@ -124,6 +126,16 @@ class FootballDataClient:
                 }
             )
         df = pd.DataFrame(standings_flat)
+
+        # format columns
+        df["points"] = df["points"].astype("Int64")
+        df["played"] = df["played"].astype("Int64")
+        df["wins"] = df["wins"].astype("Int64")
+        df["draws"] = df["draws"].astype("Int64")
+        df["losses"] = df["losses"].astype("Int64")
+        df["goals_for"] = df["goals_for"].astype("Int64")
+        df["goals_against"] = df["goals_against"].astype("Int64")
+        df["goal_difference"] = df["goal_difference"].astype("Int64")
 
         return df
 
@@ -155,7 +167,10 @@ class FootballDataClient:
             ) from e
 
     def get_matches(
-        self, start_date: str, end_date: Optional[str] = None
+        self,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        matchday: Optional[int] = None,
     ) -> pd.DataFrame:
         """
         Fetch and process matches.
@@ -165,8 +180,12 @@ class FootballDataClient:
         :return: DataFrame containing matches
         """
         endpoint = "/v4/competitions/PL/matches"
-        params = {"dateFrom": start_date, "dateTo": start_date}
-        if end_date:
+        params = {}
+        # matchday takes precedence
+        if matchday:
+            params["matchday"] = matchday
+        elif start_date and end_date:
+            params["dateFrom"] = start_date
             params["dateTo"] = end_date
         data = self.make_request(endpoint, params=params)
 

@@ -44,6 +44,11 @@ def live_scores(console: Console, df: pd.DataFrame, title: str):
             time_display = row["local_time"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
             time_display = row["clean_status"]
+        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
+            time_display = row["clean_status"]
+        if row["clean_status"] == "Postponed":
+            score_display = "-"
+            time_display = "Postponed"
 
         # home_display = Text(row["home_team"] + f" ({row["home_team_code"]})")
         # away_display = Text(row["away_team"] + f" ({row["away_team_code"]})")
