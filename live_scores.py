@@ -12,22 +12,9 @@ from rich.text import Text
 from lgdash.client import FootballDataClient
 import lgdash.display as display
 
-# logging.basicConfig(
-#     level=logging.INFO, format="| %(asctime)s | %(name)s | %(levelname)s | %(message)s"
-# )
-
-# logging.basicConfig(level=logging.DEBUG)
-
 logging.basicConfig(format="| %(asctime)s | %(name)s | %(levelname)s | %(message)s")
 package_logger = logging.getLogger("lgdash")
 package_logger.setLevel(logging.DEBUG)
-# package_logger.propagate = True
-
-
-# package_logger = logging.getLogger("your_package_name")
-# print(f"Logger name: {package_logger.name}")
-# print(f"Handlers: {package_logger.handlers}")
-# print(f"Level: {package_logger.level}")
 
 FBD_ENV_VAR = "FOOTBALLDATA_API_KEY"
 
@@ -60,3 +47,6 @@ if __name__ == "__main__":
     # end = end_dt.strftime("%Y-%m-%d")
     # upcoming_df = fbd_api.get_matches(start, end)
     # display_score_table(console, upcoming_df, "Upcoming")
+
+    standings_df = fbd_api.get_standings()
+    print(standings_df)

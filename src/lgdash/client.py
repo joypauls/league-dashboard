@@ -103,6 +103,30 @@ class FootballDataClient:
 
         return self._sort_matches(df)
 
+    def _build_standings_df(self, standings: List[Dict]) -> pd.DataFrame:
+        standings_flat = []
+        for team in standings:
+            print(team)
+            standings_flat.append(
+                {
+                    "position": team["position"],
+                    "team": team["team"]["shortName"],
+                    "tla": team["team"]["tla"],
+                    "played": team["playedGames"],
+                    "wins": team["won"],
+                    "draws": team["draw"],
+                    "losses": team["lost"],
+                    "points": team["points"],
+                    "goals_for": team["goalsFor"],
+                    "goals_against": team["goalsAgainst"],
+                    "goal_difference": team["goalDifference"],
+                    # "form": team["form"],
+                }
+            )
+        df = pd.DataFrame(standings_flat)
+
+        return df
+
     def make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict:
         """
         Make a request to the API.
@@ -136,8 +160,6 @@ class FootballDataClient:
         """
         Fetch and process matches.
 
-        Currently, PL (Premier League) is hardcoded.
-
         :param start_date: start_date
         :param end_date: end_date
         :return: DataFrame containing matches
@@ -154,5 +176,24 @@ class FootballDataClient:
         #     pickle.dump(data, file)
 
         matches = data.get("matches", [])
+        logger.debug(f"Retrieved {len(matches)} matches")
 
         return self._build_matches_df(matches)
+
+    def get_standings(self) -> pd.DataFrame:
+        """
+        Fetch and process the most current league standings.
+
+        :return: DataFrame containing standings
+        """
+        endpoint = "/v4/competitions/PL/standings"
+        data = self.make_request(endpoint)
+
+        standings = data.get("standings", [])
+        for standing in standings:
+            if standing["type"] == "TOTAL":
+                standings = standing["table"]
+                break
+        logger.debug(f"Retrieved standings with {len(standings)} teams")
+
+        return self._build_standings_df(standings)

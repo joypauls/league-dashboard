@@ -1,4 +1,4 @@
-# ⚽ League Dashboard
+# League Dashboard ⚽📈
 
 Currently requires a football-data.org API key.
 
@@ -9,13 +9,17 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ## Quick Start
 
+### Get API Key
+
 ### Install
 
+### Use
 
-### Get Today's Scores
+#### Get Scores
 
+#### Get Upcoming Matches
 
-#### How to Read
+#### Get Standings
 
 
 
@@ -24,16 +28,17 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ## Dev Notes
 
+### TODO
+
+- setup pytest
+- backup default to something when detecting system timezone in case of failure
+
 ### Version Bump
 
 1. Change in `pyproject.toml`
 2. Change `__version__` variable in`src/lgdash/__init__.py`
 
 Should automate this eventually.
-
-### TODO
-
-- show start time in system time zone
 
 ### Supported Leagues 
 
