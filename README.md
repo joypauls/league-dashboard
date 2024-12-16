@@ -20,7 +20,6 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 
 
-
 ---
 
 ## Dev Notes

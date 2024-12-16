@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 from tzlocal import get_localzone
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming"]
@@ -97,7 +96,7 @@ class FootballDataClient:
 
         # dates and times
         system_timezone = get_localzone()
-        logger.debug(f"System timezone detected: {system_timezone}")
+        logger.debug(f"Detected timezone {system_timezone}")
         df["local_datetime"] = df["utc_datetime"].dt.tz_convert(system_timezone)
         df["local_date"] = df["local_datetime"].dt.strftime("%Y-%m-%d")
         df["local_time"] = df["local_datetime"].dt.strftime("%H:%M")
@@ -118,7 +117,7 @@ class FootballDataClient:
         url = f"{self.base_url}/{endpoint}"
 
         try:
-            # logger.info(f"Making request to {url} with params {params}")
+            logger.debug(f"Making request to {url}")
             response = requests.get(url, params=params, headers=headers)
             response.raise_for_status()
             data = response.json()

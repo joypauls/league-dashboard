@@ -12,8 +12,22 @@ from rich.text import Text
 from lgdash.client import FootballDataClient
 import lgdash.display as display
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(
+#     level=logging.INFO, format="| %(asctime)s | %(name)s | %(levelname)s | %(message)s"
+# )
+
+# logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(format="| %(asctime)s | %(name)s | %(levelname)s | %(message)s")
+package_logger = logging.getLogger("lgdash")
+package_logger.setLevel(logging.DEBUG)
+# package_logger.propagate = True
+
+
+# package_logger = logging.getLogger("your_package_name")
+# print(f"Logger name: {package_logger.name}")
+# print(f"Handlers: {package_logger.handlers}")
+# print(f"Level: {package_logger.level}")
 
 FBD_ENV_VAR = "FOOTBALLDATA_API_KEY"
 
