@@ -33,21 +33,24 @@ if __name__ == "__main__":
 
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
-    df = fbd_api.get_matches()
+    df = fbd_api.get_matches(start_date=today, end_date=today)
+    # df = fbd_api.get_matches(matchday=16)
 
     # with open("live_matches_half_20251214.pkl", "rb") as file:
     #     data = pickle.load(file)
     #     df = fbd_api._build_matches_df(data["matches"])
 
     console = Console()
-    display.dashboard(console, df, "Today")
+    display.today(console, df, "Today")
+    # display.upcoming_matches(console, df, "Upcoming")
 
+    # # upcoming matches
     # start_dt = today_dt + timedelta(days=1)
-    # end_dt = today_dt + timedelta(days=7)
+    # end_dt = today_dt + timedelta(days=30)
     # start = start_dt.strftime("%Y-%m-%d")
     # end = end_dt.strftime("%Y-%m-%d")
-    # upcoming_df = fbd_api.get_matches(start, end)
-    # display_score_table(console, upcoming_df, "Upcoming")
+    # upcoming_df = fbd_api.get_matches(start_date=start, end_date=end)
+    # display.upcoming_matches(console, upcoming_df, "Upcoming")
 
     # standings_df = fbd_api.get_standings()
     # display.dataframe(console, standings_df, "Standings")

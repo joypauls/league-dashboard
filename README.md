@@ -30,6 +30,8 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ### TODO
 
+- move sort to display logic
+- combine matches requests all into one and filter when possible
 - avoid changing values too much from API's (e.g. status) keep that in the display logic instead
 - setup pytest
 - backup default to something when detecting system timezone in case of failure

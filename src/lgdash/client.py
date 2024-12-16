@@ -7,8 +7,6 @@ from tzlocal import get_localzone
 
 logger = logging.getLogger(__name__)
 
-MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
-
 
 def convert_status(status: Optional[str]) -> str:
     if status == "IN_PLAY":
@@ -50,16 +48,6 @@ class FootballDataClient:
         """
         self.base_url = "https://api.football-data.org"
         self.api_key = api_key
-
-    def _sort_matches(self, matches_df: pd.DataFrame) -> pd.DataFrame:
-        return matches_df.sort_values(
-            by=["clean_status", "home_team"],
-            key=lambda col: (
-                col
-                if col.name == "home_team"
-                else col.apply(lambda x: MATCH_STATUS_ORDER.index(x))
-            ),
-        )
 
     def _build_matches_df(self, matches: List[Dict]) -> pd.DataFrame:
         matches_flat = []
@@ -104,7 +92,7 @@ class FootballDataClient:
         df["local_date"] = df["local_datetime"].dt.strftime("%Y-%m-%d")
         df["local_time"] = df["local_datetime"].dt.strftime("%H:%M")
 
-        return self._sort_matches(df)
+        return df
 
     def _build_standings_df(self, standings: List[Dict]) -> pd.DataFrame:
         standings_flat = []
