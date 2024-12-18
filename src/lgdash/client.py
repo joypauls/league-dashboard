@@ -189,14 +189,18 @@ class FootballDataClient:
 
         return self._build_matches_df(matches)
 
-    def get_standings(self) -> pd.DataFrame:
+    def get_standings(self, season: Optional[int] = None) -> Tuple[Dict, pd.DataFrame]:
         """
         Fetch and process the most current league standings.
 
+        :param season: Season/Year (e.g. 2024 for 2024/2025)
         :return: DataFrame containing standings
         """
         endpoint = "/v4/competitions/PL/standings"
-        data = self.make_request(endpoint)
+        params = {}
+        if season:
+            params["season"] = season
+        data = self.make_request(endpoint, params=params)
 
         standings = data.get("standings", [])
         for standing in standings:
@@ -205,4 +209,9 @@ class FootballDataClient:
                 break
         logger.debug(f"Retrieved standings with {len(standings)} teams")
 
-        return self._build_standings_df(standings)
+        metadata = {}
+        for key in data:
+            if key != "standings":
+                metadata[key] = data[key]
+
+        return metadata, self._build_standings_df(standings)

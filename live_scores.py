@@ -53,5 +53,6 @@ if __name__ == "__main__":
     # # upcoming_df = fbd_api.get_matches(matchday=14)
     # display.upcoming(console, upcoming_df, "Schedule")
 
-    standings_df = fbd_api.get_standings()
-    display.standings(console, standings_df, "Standings")
+    standings_meta, standings_df = fbd_api.get_standings()
+    standings_season = f"{standings_meta["season"]["startDate"][:4]}-{standings_meta["season"]["endDate"][:4]}"
+    display.standings(console, standings_df, f"Standings ({standings_season})")
