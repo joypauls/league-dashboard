@@ -240,7 +240,7 @@ class FootballDataClient:
 
     def get_scorers(
         self, season: Optional[int] = None, limit: Optional[int] = 10
-    ) -> pd.DataFrame:
+    ) -> Tuple[Dict, pd.DataFrame]:
         """
         Fetch and process the most current top scorers.
 
@@ -256,7 +256,7 @@ class FootballDataClient:
         season_metadata = data.get("season", {})
         if season_metadata:
             stages = season_metadata.get("stages", [])
-            if len(stages) > 0:
+            if len(stages) > 1:
                 raise NotImplementedError(
                     "Multiple stages found in season, not yet fully supported"
                 )
@@ -264,4 +264,9 @@ class FootballDataClient:
         scorers = data.get("scorers", [])
         logger.debug(f"Retrieved {len(scorers)} top scorers")
 
-        return self._build_scorers_df(scorers)
+        metadata = {}
+        for key in data:
+            if key != "scorers":
+                metadata[key] = data[key]
+
+        return metadata, self._build_scorers_df(scorers)

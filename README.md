@@ -24,21 +24,17 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ## Commands
 
-`lgdash`
-
-`lgdash today`
-
-`lgdash tomorrow`
-
-`lgdash schedule`
-
-`lgdash standings`
-- filters: year
-
 
 ---
 
-## Dev Notes
+## Development
+
+`poetry install`
+- install package locally
+`poetry run lgdash`
+- run package CLI with local installation
+
+
 
 ### TODO
 

@@ -59,5 +59,7 @@ if __name__ == "__main__":
     # display.standings(console, standings_df, f"Standings ({standings_season})")
 
     # top scorers
-    top_scorers = fbd_api.get_scorers()
-    display.top_scorers(console, top_scorers, "Top Scorers")
+    # scorers_meta, scorers_df = fbd_api.get_scorers(season=2023)
+    scorers_meta, scorers_df = fbd_api.get_scorers()
+    scorers_season = f"{scorers_meta["season"]["startDate"][:4]}-{scorers_meta["season"]["endDate"][:4]}"
+    display.top_scorers(console, scorers_df, f"Top Scorers ({scorers_season})")

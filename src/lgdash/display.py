@@ -200,7 +200,7 @@ def top_scorers(console: Console, df: pd.DataFrame, title: str):
     table.add_column("Team", justify="left")
     table.add_column("Goals", justify="right")
     table.add_column("Assists", justify="right")
-    table.add_column("Penalties", justify="right")
+    # table.add_column("Penalties", justify="right")
 
     for index, row in df.iterrows():
         table.add_row(
@@ -208,7 +208,7 @@ def top_scorers(console: Console, df: pd.DataFrame, title: str):
             row["team"],
             str(row["goals"]),
             str(row["assists"]),
-            str(row["penalties"]),
+            # str(row["penalties"]),
         )
 
     console.print(table)
