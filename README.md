@@ -22,6 +22,18 @@ FOOTBALLDATA_API_KEY=<your key here>
 #### Get Standings
 
 
+## Commands
+
+`lgdash`
+
+`lgdash today`
+
+`lgdash tomorrow`
+
+`lgdash schedule`
+
+`lgdash standings`
+- filters: year
 
 
 ---

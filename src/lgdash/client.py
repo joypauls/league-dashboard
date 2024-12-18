@@ -1,6 +1,6 @@
 import requests
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from datetime import datetime, timedelta
 import pandas as pd
 from tzlocal import get_localzone
@@ -104,9 +104,9 @@ class FootballDataClient:
                     "tla": team["team"]["tla"],
                     "points": team["points"],
                     "played": team["playedGames"],
-                    "wins": team["won"],
-                    "draws": team["draw"],
-                    "losses": team["lost"],
+                    "won": team["won"],
+                    "draw": team["draw"],
+                    "lost": team["lost"],
                     "goals_for": team["goalsFor"],
                     "goals_against": team["goalsAgainst"],
                     "goal_difference": team["goalDifference"],
@@ -118,9 +118,9 @@ class FootballDataClient:
         # format columns
         df["points"] = df["points"].astype("Int64")
         df["played"] = df["played"].astype("Int64")
-        df["wins"] = df["wins"].astype("Int64")
-        df["draws"] = df["draws"].astype("Int64")
-        df["losses"] = df["losses"].astype("Int64")
+        df["won"] = df["won"].astype("Int64")
+        df["draw"] = df["draw"].astype("Int64")
+        df["lost"] = df["lost"].astype("Int64")
         df["goals_for"] = df["goals_for"].astype("Int64")
         df["goals_against"] = df["goals_against"].astype("Int64")
         df["goal_difference"] = df["goal_difference"].astype("Int64")

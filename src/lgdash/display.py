@@ -40,7 +40,7 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     # all matchdays should be equal in this use case
     matchday = df["matchday"].iloc[0]
     title = f"{title} (Matchday {matchday})"
-    table = Table(title=title, box=box.HORIZONTALS, show_header=False)
+    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 
     table.add_column("Home", justify="right")
     table.add_column("Score", justify="center")
@@ -89,15 +89,18 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
-def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
+def schedule(console: Console, df: pd.DataFrame, title: str):
 
-    table = Table(title=title, box=box.HORIZONTALS, show_header=False)
+    df = df.sort_values(by=["utc_datetime"]).head(10)
 
-    table.add_column("Home", justify="right")
-    table.add_column("V", justify="center")
+    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+
+    table.add_column("Home", justify="left")
+    # table.add_column("V", justify="center", width=1)
     table.add_column("Away", justify="left")
     table.add_column("Date", justify="left")
     table.add_column("Time", justify="left")
+    table.add_column("Matchday", justify="left")
 
     for index, row in df.iterrows():
 
@@ -128,10 +131,10 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
         table.add_row(
             home_display,
-            "v",
             away_display,
             row["local_date"],
             time_display,
+            str(row["matchday"]),
         )
 
     console.print(table)
@@ -140,7 +143,7 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 def today(console: Console, df: pd.DataFrame, title: str):
     console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
     if df.empty:
-        console.print(Text("No matches today ¯\_(ツ)_/¯", style="italic"))
+        console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))
     else:
         todays_matches(console, df, title)
     console.print("")
@@ -149,7 +152,40 @@ def today(console: Console, df: pd.DataFrame, title: str):
 def upcoming(console: Console, df: pd.DataFrame, title: str):
     console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
     if df.empty:
-        console.print(Text("No upcoming matches found ¯\_(ツ)_/¯", style="italic"))
+        console.print(Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic"))
     else:
-        upcoming_matches(console, df, title)
+        schedule(console, df, title)
+    console.print("")
+
+
+def standings(console: Console, df: pd.DataFrame, title: str):
+    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
+    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+
+    table.add_column("", justify="right")
+    table.add_column("Team", justify="left")
+    table.add_column("Points", justify="right")
+    table.add_column("Played", justify="right")
+    table.add_column("W", justify="right")
+    table.add_column("D", justify="right")
+    table.add_column("L", justify="right")
+    table.add_column("GF", justify="right")
+    table.add_column("GA", justify="right")
+    table.add_column("GD", justify="center")
+
+    for index, row in df.iterrows():
+        table.add_row(
+            str(row["position"]),
+            row["team"],
+            str(row["points"]),
+            str(row["played"]),
+            str(row["won"]),
+            str(row["draw"]),
+            str(row["lost"]),
+            str(row["goals_for"]),
+            str(row["goals_against"]),
+            str(row["goal_difference"]),
+        )
+
+    console.print(table)
     console.print("")
