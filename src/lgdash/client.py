@@ -127,6 +127,27 @@ class FootballDataClient:
 
         return df
 
+    def _build_scorers_df(self, scorers: List[Dict]) -> pd.DataFrame:
+        scorers_flat = []
+        for scorer in scorers:
+            scorers_flat.append(
+                {
+                    "name": scorer["player"]["name"],
+                    "team": scorer["team"]["shortName"],
+                    "goals": scorer["goals"],
+                    "assists": scorer["assists"],
+                    "penalties": scorer["penalties"],
+                }
+            )
+        df = pd.DataFrame(scorers_flat)
+
+        # format columns
+        df["goals"] = df["goals"].astype("Int64").fillna(0)
+        df["assists"] = df["assists"].astype("Int64").fillna(0)
+        df["penalties"] = df["penalties"].astype("Int64").fillna(0)
+
+        return df
+
     def make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict:
         """
         Make a request to the API.
@@ -203,6 +224,7 @@ class FootballDataClient:
         data = self.make_request(endpoint, params=params)
 
         standings = data.get("standings", [])
+        # is this going to need to be different for different leagues?
         for standing in standings:
             if standing["type"] == "TOTAL":
                 standings = standing["table"]
@@ -215,3 +237,31 @@ class FootballDataClient:
                 metadata[key] = data[key]
 
         return metadata, self._build_standings_df(standings)
+
+    def get_scorers(
+        self, season: Optional[int] = None, limit: Optional[int] = 10
+    ) -> pd.DataFrame:
+        """
+        Fetch and process the most current top scorers.
+
+        :param season: Season/Year (e.g. 2024 for 2024/2025)
+        :return: DataFrame containing top scorers
+        """
+        endpoint = "/v4/competitions/PL/scorers"
+        params = {"limit": limit}
+        if season:
+            params["season"] = season
+        data = self.make_request(endpoint, params=params)
+
+        season_metadata = data.get("season", {})
+        if season_metadata:
+            stages = season_metadata.get("stages", [])
+            if len(stages) > 0:
+                raise NotImplementedError(
+                    "Multiple stages found in season, not yet fully supported"
+                )
+
+        scorers = data.get("scorers", [])
+        logger.debug(f"Retrieved {len(scorers)} top scorers")
+
+        return self._build_scorers_df(scorers)

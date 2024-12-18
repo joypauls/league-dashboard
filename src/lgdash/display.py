@@ -96,11 +96,10 @@ def schedule(console: Console, df: pd.DataFrame, title: str):
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 
     table.add_column("Home", justify="left")
-    # table.add_column("V", justify="center", width=1)
     table.add_column("Away", justify="left")
+    table.add_column("Matchday", justify="left")
     table.add_column("Date", justify="left")
     table.add_column("Time", justify="left")
-    table.add_column("Matchday", justify="left")
 
     for index, row in df.iterrows():
 
@@ -132,9 +131,9 @@ def schedule(console: Console, df: pd.DataFrame, title: str):
         table.add_row(
             home_display,
             away_display,
+            str(row["matchday"]),
             row["local_date"],
             time_display,
-            str(row["matchday"]),
         )
 
     console.print(table)
@@ -152,7 +151,9 @@ def today(console: Console, df: pd.DataFrame, title: str):
 def upcoming(console: Console, df: pd.DataFrame, title: str):
     console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
     if df.empty:
-        console.print(Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic"))
+        console.print(
+            Text("No matches found in next 30 days ¯\\_(ツ)_/¯", style="italic")
+        )
     else:
         schedule(console, df, title)
     console.print("")
@@ -185,6 +186,29 @@ def standings(console: Console, df: pd.DataFrame, title: str):
             str(row["goals_for"]),
             str(row["goals_against"]),
             str(row["goal_difference"]),
+        )
+
+    console.print(table)
+    console.print("")
+
+
+def top_scorers(console: Console, df: pd.DataFrame, title: str):
+    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
+    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+
+    table.add_column("Player", justify="left")
+    table.add_column("Team", justify="left")
+    table.add_column("Goals", justify="right")
+    table.add_column("Assists", justify="right")
+    table.add_column("Penalties", justify="right")
+
+    for index, row in df.iterrows():
+        table.add_row(
+            row["name"],
+            row["team"],
+            str(row["goals"]),
+            str(row["assists"]),
+            str(row["penalties"]),
         )
 
     console.print(table)
