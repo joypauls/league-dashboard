@@ -184,6 +184,8 @@ class FootballDataClient:
 
         matches = data.get("matches", [])
         logger.debug(f"Retrieved {len(matches)} matches")
+        if not matches:
+            return pd.DataFrame()
 
         return self._build_matches_df(matches)
 

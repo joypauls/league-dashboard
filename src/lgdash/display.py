@@ -139,11 +139,17 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
 def today(console: Console, df: pd.DataFrame, title: str):
     console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
-    todays_matches(console, df, title)
+    if df.empty:
+        console.print(Text("No matches today ¯\_(ツ)_/¯", style="italic"))
+    else:
+        todays_matches(console, df, title)
     console.print("")
 
 
 def upcoming(console: Console, df: pd.DataFrame, title: str):
     console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
-    upcoming_matches(console, df, title)
+    if df.empty:
+        console.print(Text("No upcoming matches found ¯\_(ツ)_/¯", style="italic"))
+    else:
+        upcoming_matches(console, df, title)
     console.print("")
