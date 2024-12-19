@@ -1,10 +1,12 @@
 import pandas as pd
+from typing import Dict
 from rich.console import Console
 from rich.table import Table
 from rich import box
 from rich.text import Text
 
 from lgdash import __version__ as version
+from .constants import SUPPORTED_LEAGUES
 
 MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
 
@@ -139,29 +141,58 @@ def schedule(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
-def today(console: Console, df: pd.DataFrame, title: str):
-    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
+def today(console: Console, df: pd.DataFrame, metadata: Dict):
+
+    league_code = metadata["competition"]["code"]
+    league_header = (
+        SUPPORTED_LEAGUES[league_code]["icon"]
+        + " "
+        + SUPPORTED_LEAGUES[league_code]["name"]
+    )
+
+    console.print(Text(league_header))
+    console.print("")
     if df.empty:
         console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))
     else:
-        todays_matches(console, df, title)
+        todays_matches(console, df, "Today")
     console.print("")
 
 
-def upcoming(console: Console, df: pd.DataFrame, title: str):
-    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
+def upcoming(console: Console, df: pd.DataFrame, metadata: Dict):
+
+    league_code = metadata["competition"]["code"]
+    league_header = (
+        SUPPORTED_LEAGUES[league_code]["icon"]
+        + " "
+        + SUPPORTED_LEAGUES[league_code]["name"]
+    )
+
+    # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
+    console.print(Text(league_header))
+    console.print("")
     if df.empty:
         console.print(
             Text("No matches found in next 30 days ¯\\_(ツ)_/¯", style="italic")
         )
     else:
-        schedule(console, df, title)
+        schedule(console, df, "Upcoming")
     console.print("")
 
 
-def standings(console: Console, df: pd.DataFrame, title: str):
-    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
-    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+def standings(console: Console, df: pd.DataFrame, metadata: Dict):
+
+    league_code = metadata["competition"]["code"]
+    league_header = (
+        SUPPORTED_LEAGUES[league_code]["icon"]
+        + " "
+        + SUPPORTED_LEAGUES[league_code]["name"]
+    )
+
+    # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
+    console.print(Text(league_header))
+    console.print("")
+    table = Table(title="Standings", box=box.HORIZONTALS, show_header=True)
 
     table.add_column("", justify="right")
     table.add_column("Team", justify="left")
@@ -192,24 +223,26 @@ def standings(console: Console, df: pd.DataFrame, title: str):
     console.print("")
 
 
-def top_scorers(console: Console, df: pd.DataFrame, title: str):
-    console.print(Text(f"⚽ League Dashboard v{version}\n", style="bold"))
-    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+# def top_scorers(console: Console, df: pd.DataFrame, title: str):
+#     # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
+#     console.print(Text("🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League"))
+#     console.print("")
+#     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 
-    table.add_column("Player", justify="left")
-    table.add_column("Team", justify="left")
-    table.add_column("Goals", justify="right")
-    table.add_column("Assists", justify="right")
-    # table.add_column("Penalties", justify="right")
+#     table.add_column("Player", justify="left")
+#     table.add_column("Team", justify="left")
+#     table.add_column("Goals", justify="right")
+#     table.add_column("Assists", justify="right")
+#     # table.add_column("Penalties", justify="right")
 
-    for index, row in df.iterrows():
-        table.add_row(
-            row["name"],
-            row["team"],
-            str(row["goals"]),
-            str(row["assists"]),
-            # str(row["penalties"]),
-        )
+#     for index, row in df.iterrows():
+#         table.add_row(
+#             row["name"],
+#             row["team"],
+#             str(row["goals"]),
+#             str(row["assists"]),
+#             # str(row["penalties"]),
+#         )
 
-    console.print(table)
-    console.print("")
+#     console.print(table)
+#     console.print("")

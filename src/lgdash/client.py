@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 from tzlocal import get_localzone
 
+from .constants import SUPPORTED_LEAGUES
+
 logger = logging.getLogger(__name__)
 
 
@@ -177,10 +179,11 @@ class FootballDataClient:
 
     def get_matches(
         self,
+        league: str = "PL",
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         matchday: Optional[int] = None,
-    ) -> pd.DataFrame:
+    ) -> Tuple[Dict, pd.DataFrame]:
         """
         Fetch and process matches.
 
@@ -188,7 +191,11 @@ class FootballDataClient:
         :param end_date: end_date
         :return: DataFrame containing matches
         """
-        endpoint = "/v4/competitions/PL/matches"
+
+        if league not in SUPPORTED_LEAGUES:
+            raise ValueError(f"League {league} not supported")
+
+        endpoint = f"/v4/competitions/{league}/matches"
         params = {}
         # matchday takes precedence
         if matchday:
@@ -197,6 +204,7 @@ class FootballDataClient:
             params["dateFrom"] = start_date
             params["dateTo"] = end_date
         data = self.make_request(endpoint, params=params)
+        # print(data)
 
         # import pickle
 
@@ -205,25 +213,28 @@ class FootballDataClient:
 
         matches = data.get("matches", [])
         logger.debug(f"Retrieved {len(matches)} matches")
-        if not matches:
-            return pd.DataFrame()
+        matches_df = self._build_matches_df(matches) if matches else pd.DataFrame()
 
-        return self._build_matches_df(matches)
+        metadata = {}
+        for key in data:
+            if key != "matches":
+                metadata[key] = data[key]
 
-    def get_standings(self, season: Optional[int] = None) -> Tuple[Dict, pd.DataFrame]:
+        return metadata, matches_df
+
+    def get_standings(self, league: str = "PL") -> Tuple[Dict, pd.DataFrame]:
         """
         Fetch and process the most current league standings.
 
         :param season: Season/Year (e.g. 2024 for 2024/2025)
         :return: DataFrame containing standings
         """
-        endpoint = "/v4/competitions/PL/standings"
+        endpoint = f"/v4/competitions/{league}/standings"
         params = {}
-        if season:
-            params["season"] = season
         data = self.make_request(endpoint, params=params)
 
         standings = data.get("standings", [])
+        # print(standings)
         # is this going to need to be different for different leagues?
         for standing in standings:
             if standing["type"] == "TOTAL":
@@ -238,35 +249,33 @@ class FootballDataClient:
 
         return metadata, self._build_standings_df(standings)
 
-    def get_scorers(
-        self, season: Optional[int] = None, limit: Optional[int] = 10
-    ) -> Tuple[Dict, pd.DataFrame]:
-        """
-        Fetch and process the most current top scorers.
+    # def get_scorers(
+    #     self, limit: Optional[int] = 10
+    # ) -> Tuple[Dict, pd.DataFrame]:
+    #     """
+    #     Fetch and process the most current top scorers.
 
-        :param season: Season/Year (e.g. 2024 for 2024/2025)
-        :return: DataFrame containing top scorers
-        """
-        endpoint = "/v4/competitions/PL/scorers"
-        params = {"limit": limit}
-        if season:
-            params["season"] = season
-        data = self.make_request(endpoint, params=params)
+    #     :param season: Season/Year (e.g. 2024 for 2024/2025)
+    #     :return: DataFrame containing top scorers
+    #     """
+    #     endpoint = "/v4/competitions/PL/scorers"
+    #     params = {"limit": limit}
+    #     data = self.make_request(endpoint, params=params)
 
-        season_metadata = data.get("season", {})
-        if season_metadata:
-            stages = season_metadata.get("stages", [])
-            if len(stages) > 1:
-                raise NotImplementedError(
-                    "Multiple stages found in season, not yet fully supported"
-                )
+    #     season_metadata = data.get("season", {})
+    #     if season_metadata:
+    #         stages = season_metadata.get("stages", [])
+    #         if len(stages) > 1:
+    #             raise NotImplementedError(
+    #                 "Multiple stages found in season, not yet fully supported"
+    #             )
 
-        scorers = data.get("scorers", [])
-        logger.debug(f"Retrieved {len(scorers)} top scorers")
+    #     scorers = data.get("scorers", [])
+    #     logger.debug(f"Retrieved {len(scorers)} top scorers")
 
-        metadata = {}
-        for key in data:
-            if key != "scorers":
-                metadata[key] = data[key]
+    #     metadata = {}
+    #     for key in data:
+    #         if key != "scorers":
+    #             metadata[key] = data[key]
 
-        return metadata, self._build_scorers_df(scorers)
+    #     return metadata, self._build_scorers_df(scorers)

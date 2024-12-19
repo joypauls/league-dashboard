@@ -30,36 +30,34 @@ if __name__ == "__main__":
 
     # client usage
     fbd_api = FootballDataClient(api_key)
+    console = Console()
 
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
-    # df = fbd_api.get_matches(start_date=today, end_date=today)
-    # df = fbd_api.get_matches(matchday=16)
+    # metadata, df = fbd_api.get_matches(start_date=today, end_date=today, league="PD")
 
-    with open("live_matches_half_20251214.pkl", "rb") as file:
-        data = pickle.load(file)
-        df = fbd_api._build_matches_df(data["matches"])
+    # with open("live_matches_half_20251214.pkl", "rb") as file:
+    #     data = pickle.load(file)
+    #     df = fbd_api._build_matches_df(data["matches"])
 
-    console = Console()
-    display.today(console, df, "Today")
-    # display.upcoming_matches(console, df, "Upcoming")
+    # display.today(console, df, metadata)
 
     # # upcoming matches
     # start_dt = today_dt + timedelta(days=1)
     # end_dt = today_dt + timedelta(days=30)
     # start = start_dt.strftime("%Y-%m-%d")
     # end = end_dt.strftime("%Y-%m-%d")
-    # upcoming_df = fbd_api.get_matches(start_date=start, end_date=end)
-    # # upcoming_df = fbd_api.get_matches(matchday=14)
-    # display.upcoming(console, upcoming_df, "Schedule")
+    # upcoming_meta, upcoming_df = fbd_api.get_matches(start_date=start, end_date=end)
+    # display.upcoming(console, upcoming_df, upcoming_meta)
 
-    # # standings
-    # standings_meta, standings_df = fbd_api.get_standings()
+    # standings
+    standings_meta, standings_df = fbd_api.get_standings(league="PD")
     # standings_season = f"{standings_meta["season"]["startDate"][:4]}-{standings_meta["season"]["endDate"][:4]}"
-    # display.standings(console, standings_df, f"Standings ({standings_season})")
+    # print(standings_meta)
+    display.standings(console, standings_df, standings_meta)
 
-    # top scorers
-    # scorers_meta, scorers_df = fbd_api.get_scorers(season=2023)
-    scorers_meta, scorers_df = fbd_api.get_scorers()
-    scorers_season = f"{scorers_meta["season"]["startDate"][:4]}-{scorers_meta["season"]["endDate"][:4]}"
-    display.top_scorers(console, scorers_df, f"Top Scorers ({scorers_season})")
+    # # top scorers
+    # # scorers_meta, scorers_df = fbd_api.get_scorers(season="2023")
+    # scorers_meta, scorers_df = fbd_api.get_scorers()
+    # scorers_season = f"{scorers_meta["season"]["startDate"][:4]}-{scorers_meta["season"]["endDate"][:4]}"
+    # display.top_scorers(console, scorers_df, f"Top Scorers ({scorers_season})")

@@ -6,6 +6,22 @@ Currently requires a football-data.org API key.
 FOOTBALLDATA_API_KEY=<your key here>
 ```
 
+## Supported Leagues
+
+- Premier League
+- La Liga
+- Serie A
+- UEFA Champion's League
+
+### Women's Soccer
+
+Unfortunately, due to data availability in the source API, there are no women's leagues available but it is an active pursuit. In the meantime, be sure to follow and support:
+- [NWSL](https://www.nwslsoccer.com/) 🇺🇸
+- [WSL](https://womensleagues.thefa.com/) 🏴󠁧󠁢󠁥󠁮󠁧󠁿
+- [Liga F](https://www.laliga.com/futbol-femenino) 🇪🇸
+
+And many others!
+
 
 ## Quick Start
 
@@ -15,7 +31,7 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ### Use
 
-#### Get Scores
+#### Get Live Scores
 
 #### Get Upcoming Matches
 
@@ -33,7 +49,6 @@ FOOTBALLDATA_API_KEY=<your key here>
 - install package locally
 `poetry run lgdash`
 - run package CLI with local installation
-
 
 
 ### TODO
