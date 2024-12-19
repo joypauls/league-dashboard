@@ -1,5 +1,3 @@
-FBD_ENV_VAR = "FOOTBALLDATA_API_KEY"
-
 SUPPORTED_LEAGUES = {
     "PL": {
         "icon": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",

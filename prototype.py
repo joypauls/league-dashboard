@@ -6,9 +6,6 @@ from datetime import datetime, timedelta
 import pickle
 import pandas as pd
 from rich.console import Console
-from rich.table import Table
-from rich import box
-from rich.text import Text
 from lgdash.client import FootballDataClient
 import lgdash.display as display
 
@@ -34,7 +31,7 @@ if __name__ == "__main__":
 
     today_dt = datetime.now()
     today = today_dt.strftime("%Y-%m-%d")
-    # metadata, df = fbd_api.get_matches(start_date=today, end_date=today, league="PD")
+    # df, metadata = fbd_api.get_matches(start_date=today, end_date=today, league="PD")
 
     # with open("live_matches_half_20251214.pkl", "rb") as file:
     #     data = pickle.load(file)
@@ -47,11 +44,11 @@ if __name__ == "__main__":
     # end_dt = today_dt + timedelta(days=30)
     # start = start_dt.strftime("%Y-%m-%d")
     # end = end_dt.strftime("%Y-%m-%d")
-    # upcoming_meta, upcoming_df = fbd_api.get_matches(start_date=start, end_date=end)
+    # upcoming_df, upcoming_meta = fbd_api.get_matches(start_date=start, end_date=end)
     # display.upcoming(console, upcoming_df, upcoming_meta)
 
     # standings
-    standings_meta, standings_df = fbd_api.get_standings(league="PD")
+    standings_df, standings_meta = fbd_api.get_standings(league="PD")
     # standings_season = f"{standings_meta["season"]["startDate"][:4]}-{standings_meta["season"]["endDate"][:4]}"
     # print(standings_meta)
     display.standings(console, standings_df, standings_meta)

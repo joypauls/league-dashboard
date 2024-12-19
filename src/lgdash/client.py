@@ -1,16 +1,18 @@
 import requests
 import logging
 from typing import Dict, List, Optional, Tuple
-from datetime import datetime, timedelta
+
+# from datetime import datetime, timedelta
 import pandas as pd
 from tzlocal import get_localzone
 
-from .constants import SUPPORTED_LEAGUES
+from .leagues import SUPPORTED_LEAGUES
+from .config import FBD_BASE_URL
 
 logger = logging.getLogger(__name__)
 
 
-def convert_status(status: Optional[str]) -> str:
+def format_status(status: Optional[str]) -> str:
     if status == "IN_PLAY":
         return "Live"
     if status == "PAUSED":
@@ -26,7 +28,7 @@ def convert_status(status: Optional[str]) -> str:
     return status
 
 
-def convert_display_minutes(minutes: Optional[int], injury_time: Optional[int]) -> str:
+def format_display_minutes(minutes: Optional[int], injury_time: Optional[int]) -> str:
     # print(type(minutes), type(injury_time))
     if pd.isna(minutes):
         return "-"
@@ -48,7 +50,7 @@ class FootballDataClient:
 
         :param api_key: Your API key for football-data.org
         """
-        self.base_url = "https://api.football-data.org"
+        self.base_url = FBD_BASE_URL
         self.api_key = api_key
 
     def _build_matches_df(self, matches: List[Dict]) -> pd.DataFrame:
@@ -81,9 +83,9 @@ class FootballDataClient:
         df["matchday"] = df["matchday"].astype("Int64")
 
         # convert values for new columns
-        df["clean_status"] = df["status"].apply(convert_status)
+        df["clean_status"] = df["status"].apply(format_status)
         df["display_minutes"] = df.apply(
-            lambda row: convert_display_minutes(row["minute"], row["injury_time"]),
+            lambda row: format_display_minutes(row["minute"], row["injury_time"]),
             axis=1,
         )
 
@@ -183,7 +185,7 @@ class FootballDataClient:
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         matchday: Optional[int] = None,
-    ) -> Tuple[Dict, pd.DataFrame]:
+    ) -> Tuple[pd.DataFrame, Dict]:
         """
         Fetch and process matches.
 
@@ -220,9 +222,9 @@ class FootballDataClient:
             if key != "matches":
                 metadata[key] = data[key]
 
-        return metadata, matches_df
+        return matches_df, metadata
 
-    def get_standings(self, league: str = "PL") -> Tuple[Dict, pd.DataFrame]:
+    def get_standings(self, league: str = "PL") -> Tuple[pd.DataFrame, Dict]:
         """
         Fetch and process the most current league standings.
 
@@ -247,7 +249,7 @@ class FootballDataClient:
             if key != "standings":
                 metadata[key] = data[key]
 
-        return metadata, self._build_standings_df(standings)
+        return self._build_standings_df(standings), metadata
 
     # def get_scorers(
     #     self, limit: Optional[int] = 10

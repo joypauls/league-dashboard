@@ -5,8 +5,8 @@ from rich.table import Table
 from rich import box
 from rich.text import Text
 
-from lgdash import __version__ as version
-from .constants import SUPPORTED_LEAGUES
+# from lgdash import __version__ as version
+from .leagues import SUPPORTED_LEAGUES
 
 MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
 

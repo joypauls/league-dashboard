@@ -11,7 +11,7 @@ FOOTBALLDATA_API_KEY=<your key here>
 - Premier League
 - La Liga
 - Serie A
-- UEFA Champion's League
+- UEFA Champions League
 
 ### Women's Soccer
 
