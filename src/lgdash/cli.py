@@ -1,10 +1,10 @@
 import click
 import os
 from datetime import datetime, timedelta
-from rich.console import Console
 from .client import FootballDataClient
 from .config import FBD_ENV_VAR
-from .display import today as today_display
+from .display import LeagueDashboard
+from .leagues import SUPPORTED_LEAGUES, DEFAULT_LEAGUE
 
 
 api_key = os.getenv(FBD_ENV_VAR)
@@ -25,16 +25,33 @@ def cli(ctx):
 @cli.command()
 @click.option("--league", "-l", help="")
 def live(league):
-    # click.echo(f"Subcommand live executed with option: {league}")
 
-    fbd_api = FootballDataClient(api_key)
-    console = Console()
+    if not league:
+        league = DEFAULT_LEAGUE
 
-    today_dt = datetime.now()
-    today = today_dt.strftime("%Y-%m-%d")
-    df, metadata = fbd_api.get_matches(start_date=today, end_date=today, league=league)
+    if league in SUPPORTED_LEAGUES.keys():
+        fbd_api = FootballDataClient(api_key)
+        today = datetime.now().strftime("%Y-%m-%d")
+        df, _ = fbd_api.get_matches(start_date=today, end_date=today, league=league)
 
-    today_display(console, df, metadata)
+        dashboard = LeagueDashboard()
+        dashboard.live(league, df)
+    else:
+        click.echo(f"League code {league} is not supported.")
+
+
+@cli.command()
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
+def standings(league):
+
+    if league in SUPPORTED_LEAGUES.keys():
+        fbd_api = FootballDataClient(api_key)
+        df, _ = fbd_api.get_standings(league=league)
+
+        dashboard = LeagueDashboard()
+        dashboard.standings(league, df)
+    else:
+        click.echo(f"League code {league} is not supported.")
 
 
 # @cli.command()

@@ -28,3 +28,5 @@ SUPPORTED_LEAGUES = {
     #     "name": "Ligue 1",
     # },
 }
+
+DEFAULT_LEAGUE = "PL"
