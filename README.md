@@ -8,9 +8,11 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ## Supported Leagues
 
-- Premier League
-- La Liga
-- Serie A
+- Premier League (England 🏴󠁧󠁢󠁥󠁮󠁧󠁿)
+- La Liga (Spain 🇪🇸)
+- Serie A (Italy 🇮🇹)
+- Bundesliga (Germany 🇩🇪)
+- Ligue 1 (France 🇫🇷)
 - UEFA Champions League
 
 ### Women's Soccer

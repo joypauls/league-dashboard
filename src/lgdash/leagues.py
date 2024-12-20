@@ -19,14 +19,14 @@ SUPPORTED_LEAGUES = {
         "icon": "🇮🇹 ",
         "name": "Serie A",
     },
-    # "BL": {
-    #     "icon": "🇩🇪",
-    #     "name": "Bundesliga",
-    # },
-    # "FL1": {
-    #     "icon": "🇫🇷",
-    #     "name": "Ligue 1",
-    # },
+    "BL1": {
+        "icon": "🇩🇪 ",
+        "name": "Bundesliga",
+    },
+    "FL1": {
+        "icon": "🇫🇷 ",
+        "name": "Ligue 1",
+    },
 }
 
 DEFAULT_LEAGUE = "PL"

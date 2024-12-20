@@ -29,7 +29,6 @@ def format_status(status: Optional[str]) -> str:
 
 
 def format_display_minutes(minutes: Optional[int], injury_time: Optional[int]) -> str:
-    # print(type(minutes), type(injury_time))
     if pd.isna(minutes):
         return "-"
     elif pd.isna(injury_time):
