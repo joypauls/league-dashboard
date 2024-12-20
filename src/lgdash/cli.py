@@ -23,11 +23,8 @@ def cli(ctx):
 
 
 @cli.command()
-@click.option("--league", "-l", help="")
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
 def live(league):
-
-    if not league:
-        league = DEFAULT_LEAGUE
 
     if league in SUPPORTED_LEAGUES.keys():
         fbd_api = FootballDataClient(api_key)
@@ -36,6 +33,26 @@ def live(league):
 
         dashboard = LeagueDashboard()
         dashboard.live(league, df)
+    else:
+        click.echo(f"League code {league} is not supported.")
+
+
+@cli.command()
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
+@click.option("--days", "-d", default=7, help="")
+def schedule(league, days):
+
+    if league in SUPPORTED_LEAGUES.keys():
+        fbd_api = FootballDataClient(api_key)
+        now = datetime.now()
+        start_date = now.strftime("%Y-%m-%d")
+        end_date = (now + timedelta(days=days)).strftime("%Y-%m-%d")
+        df, _ = fbd_api.get_matches(
+            start_date=start_date, end_date=end_date, league=league
+        )
+
+        dashboard = LeagueDashboard()
+        dashboard.schedule(league, df)
     else:
         click.echo(f"League code {league} is not supported.")
 

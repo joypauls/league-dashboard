@@ -91,15 +91,15 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
-def schedule(console: Console, df: pd.DataFrame, title: str):
+def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
-    df = df.sort_values(by=["utc_datetime"]).head(10)
+    df = df.sort_values(by=["utc_datetime"])
 
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 
     table.add_column("Home", justify="left")
     table.add_column("Away", justify="left")
-    table.add_column("Matchday", justify="left")
+    # table.add_column("Matchday", justify="left")
     table.add_column("Date", justify="left")
     table.add_column("Time", justify="left")
 
@@ -133,7 +133,7 @@ def schedule(console: Console, df: pd.DataFrame, title: str):
         table.add_row(
             home_display,
             away_display,
-            str(row["matchday"]),
+            # str(row["matchday"]),
             row["local_date"],
             time_display,
         )
@@ -159,25 +159,25 @@ def schedule(console: Console, df: pd.DataFrame, title: str):
 #     console.print("")
 
 
-def upcoming(console: Console, df: pd.DataFrame, metadata: Dict):
+# def upcoming(console: Console, df: pd.DataFrame, metadata: Dict):
 
-    league_code = metadata["competition"]["code"]
-    league_header = (
-        SUPPORTED_LEAGUES[league_code]["icon"]
-        + " "
-        + SUPPORTED_LEAGUES[league_code]["name"]
-    )
+#     league_code = metadata["competition"]["code"]
+#     league_header = (
+#         SUPPORTED_LEAGUES[league_code]["icon"]
+#         + " "
+#         + SUPPORTED_LEAGUES[league_code]["name"]
+#     )
 
-    # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
-    console.print(Text(league_header))
-    console.print("")
-    if df.empty:
-        console.print(
-            Text("No matches found in next 30 days ¯\\_(ツ)_/¯", style="italic")
-        )
-    else:
-        schedule(console, df, "Upcoming")
-    console.print("")
+#     # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
+#     console.print(Text(league_header))
+#     console.print("")
+#     if df.empty:
+#         console.print(
+#             Text("No matches found in next 30 days ¯\\_(ツ)_/¯", style="italic")
+#         )
+#     else:
+#         schedule(console, df, "Upcoming")
+#     console.print("")
 
 
 def standings(console: Console, df: pd.DataFrame, metadata: Dict):
@@ -299,4 +299,14 @@ class LeagueDashboard:
             )
 
         self.console.print(table)
+        self.console.print("")
+
+    def schedule(self, league_code: str, df: pd.DataFrame):
+        self.display_league_header(league_code)
+        if df.empty:
+            self.console.print(
+                Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic")
+            )
+        else:
+            upcoming_matches(self.console, df, "Upcoming Matches")
         self.console.print("")
