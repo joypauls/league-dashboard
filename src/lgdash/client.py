@@ -94,6 +94,7 @@ class FootballDataClient:
         df["local_datetime"] = df["utc_datetime"].dt.tz_convert(system_timezone)
         df["local_date"] = df["local_datetime"].dt.strftime("%Y-%m-%d")
         df["local_time"] = df["local_datetime"].dt.strftime("%H:%M")
+        df["local_tz"] = df["local_datetime"].dt.strftime("%Z")
 
         return df
 

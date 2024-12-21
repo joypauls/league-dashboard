@@ -51,13 +51,13 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     # just for debugging
     # table.add_column("state", justify="left")
 
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
 
         score_display = f"{row['home_score']} - {row['away_score']}"
         time_display = row["display_minutes"]
         if row["clean_status"] == "Upcoming":
             score_display = "-"
-            time_display = row["local_time"]
+            time_display = row["local_time"] + " " + row["local_tz"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
             time_display = row["clean_status"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
@@ -99,15 +99,14 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
     table.add_column("Home", justify="left")
     table.add_column("Away", justify="left")
-    # table.add_column("Matchday", justify="left")
     table.add_column("Date", justify="left")
     table.add_column("Time", justify="left")
 
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
 
         time_display = row["display_minutes"]
         if row["clean_status"] == "Upcoming":
-            time_display = row["local_time"]
+            time_display = row["local_time"] + " " + row["local_tz"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
             time_display = row["clean_status"]
         if row["clean_status"] == "FT" or row["clean_status"] == "HT":
@@ -115,8 +114,6 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
         if row["clean_status"] == "Postponed":
             time_display = "Postponed"
 
-        # home_display = Text(row["home_team"] + f" ({row["home_team_code"]})")
-        # away_display = Text(row["away_team"] + f" ({row["away_team_code"]})")
         home_display = Text(row["home_team"])
         away_display = Text(row["away_team"])
         if not pd.isna(row["home_score"]):
@@ -133,7 +130,6 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
         table.add_row(
             home_display,
             away_display,
-            # str(row["matchday"]),
             row["local_date"],
             time_display,
         )
