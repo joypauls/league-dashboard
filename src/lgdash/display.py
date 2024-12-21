@@ -40,8 +40,8 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     df = _sort_matches(df)
 
     # all matchdays should be equal in this use case
-    matchday = df["matchday"].iloc[0]
-    title = f"{title} (Matchday {matchday})"
+    # matchday = df["matchday"].iloc[0]
+    # title = f"{title} (Matchday {matchday})"
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 
     table.add_column("Home", justify="right")
@@ -179,7 +179,7 @@ class LeagueDashboard:
         self.console.print(Text(league_header))
         self.console.print("")
 
-    def live(self, league_code: str, df: pd.DataFrame):
+    def today(self, league_code: str, df: pd.DataFrame):
         self.display_league_header(league_code)
         if df.empty:
             self.console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))

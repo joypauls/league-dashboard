@@ -130,26 +130,26 @@ class FootballDataClient:
 
         return df
 
-    def _build_scorers_df(self, scorers: List[Dict]) -> pd.DataFrame:
-        scorers_flat = []
-        for scorer in scorers:
-            scorers_flat.append(
-                {
-                    "name": scorer["player"]["name"],
-                    "team": scorer["team"]["shortName"],
-                    "goals": scorer["goals"],
-                    "assists": scorer["assists"],
-                    "penalties": scorer["penalties"],
-                }
-            )
-        df = pd.DataFrame(scorers_flat)
+    # def _build_scorers_df(self, scorers: List[Dict]) -> pd.DataFrame:
+    #     scorers_flat = []
+    #     for scorer in scorers:
+    #         scorers_flat.append(
+    #             {
+    #                 "name": scorer["player"]["name"],
+    #                 "team": scorer["team"]["shortName"],
+    #                 "goals": scorer["goals"],
+    #                 "assists": scorer["assists"],
+    #                 "penalties": scorer["penalties"],
+    #             }
+    #         )
+    #     df = pd.DataFrame(scorers_flat)
 
-        # format columns
-        df["goals"] = df["goals"].astype("Int64").fillna(0)
-        df["assists"] = df["assists"].astype("Int64").fillna(0)
-        df["penalties"] = df["penalties"].astype("Int64").fillna(0)
+    #     # format columns
+    #     df["goals"] = df["goals"].astype("Int64").fillna(0)
+    #     df["assists"] = df["assists"].astype("Int64").fillna(0)
+    #     df["penalties"] = df["penalties"].astype("Int64").fillna(0)
 
-        return df
+    #     return df
 
     def make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict:
         """
@@ -209,7 +209,7 @@ class FootballDataClient:
 
         # import pickle
 
-        # with open("live_matches_midway2_20251215.pkl", "wb") as file:
+        # with open("live_matches_arsenal_20251221.pkl", "wb") as file:
         #     pickle.dump(data, file)
 
         matches = data.get("matches", [])

@@ -24,7 +24,7 @@ def cli(ctx):
 
 @cli.command()
 @click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
-def live(league):
+def today(league):
 
     if league in SUPPORTED_LEAGUES.keys():
         fbd_api = FootballDataClient(api_key)
@@ -32,7 +32,7 @@ def live(league):
         df, _ = fbd_api.get_matches(start_date=today, end_date=today, league=league)
 
         dashboard = LeagueDashboard()
-        dashboard.live(league, df)
+        dashboard.today(league, df)
     else:
         click.echo(f"League code {league} is not supported.")
 
