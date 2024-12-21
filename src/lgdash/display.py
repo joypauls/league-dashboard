@@ -29,10 +29,10 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
 
     def _sort_matches(matches_df: pd.DataFrame) -> pd.DataFrame:
         return matches_df.sort_values(
-            by=["clean_status", "home_team"],
+            by=["clean_status", "local_datetime", "home_team"],
             key=lambda col: (
                 col
-                if col.name == "home_team"
+                if col.name == "local_datetime" or col.name == "home_team"
                 else col.apply(lambda x: MATCH_STATUS_ORDER.index(x))
             ),
         )
