@@ -20,13 +20,13 @@ if not api_key:
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx):
-    """CLI App with Default Behavior and Subcommands"""
+    """Command line tool for displaying live soccer scores and statistics."""
     if not ctx.invoked_subcommand:
         click.echo("Default behavior: This is the root command.")
 
 
 @cli.command()
-@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code.")
 def today(league):
 
     if league in SUPPORTED_LEAGUES.keys():
@@ -41,8 +41,8 @@ def today(league):
 
 
 @cli.command()
-@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
-@click.option("--days", "-d", default=7, help="")
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code")
+@click.option("--days", "-d", default=7, help="Days in future.")
 def schedule(league, days):
 
     if league in SUPPORTED_LEAGUES.keys():
@@ -72,6 +72,12 @@ def standings(league):
         dashboard.standings(league, df)
     else:
         click.echo(f"League code {league} is not supported.")
+
+
+@cli.command()
+def leagues():
+    dashboard = LeagueDashboard()
+    dashboard.leagues()
 
 
 # @cli.command()

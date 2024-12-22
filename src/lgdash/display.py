@@ -18,7 +18,7 @@ def dataframe(console: Console, df: pd.DataFrame, title: str):
 
     for col in df.columns:
         table.add_column(col)
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
         table.add_row(*[str(x) for x in row])
 
     console.print(table)
@@ -139,6 +139,17 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
+def print_leagues(console: Console):
+    console.print("")
+    table = Table(title="Supported Leagues", box=box.HORIZONTALS)
+    table.add_column("Code")
+    table.add_column("Name")
+    for league in SUPPORTED_LEAGUES:
+        table.add_row(league, SUPPORTED_LEAGUES[league]["name"])
+    console.print(table)
+    console.print("")
+
+
 # def top_scorers(console: Console, df: pd.DataFrame, title: str):
 #     # console.print(Text(f"⚽ lgdash v{version}\n", style="bold"))
 #     console.print(Text("🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League"))
@@ -226,3 +237,6 @@ class LeagueDashboard:
         else:
             upcoming_matches(self.console, df, "Upcoming Matches")
         self.console.print("")
+
+    def leagues(self):
+        print_leagues(self.console)
