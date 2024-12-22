@@ -75,18 +75,6 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
         score_display = _extract_score_from_row(row)
         time_display = _extract_time_from_row(row)
 
-        # time_display = row["display_minutes"]
-        # if row["clean_status"] == "Upcoming":
-        #     time_display = row["local_time"] + " " + row["local_tz"]
-        # if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-        #     time_display = row["clean_status"]
-        # if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-        #     time_display = row["clean_status"]
-        # if row["clean_status"] == "Postponed":
-        #     time_display = "Postponed"
-
-        # home_display = Text(row["home_team"] + f" ({row["home_team_code"]})")
-        # away_display = Text(row["away_team"] + f" ({row["away_team_code"]})")
         home_display = Text(row["home_team"])
         away_display = Text(row["away_team"])
         if not pd.isna(row["home_score"]):
@@ -129,16 +117,6 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
         home_display = Text(row["home_team"])
         away_display = Text(row["away_team"])
-        if not pd.isna(row["home_score"]):
-            if row["home_score"] > row["away_score"]:
-                home_display.stylize("orange1")
-                away_display.stylize("blue")
-            elif row["home_score"] < row["away_score"]:
-                home_display.stylize("blue")
-                away_display.stylize("orange1")
-            else:
-                home_display.stylize("blue")
-                away_display.stylize("blue")
 
         table.add_row(
             home_display,
@@ -150,15 +128,46 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
+def print_standings(console: Console, df: pd.DataFrame, metadata: Dict):
+    season_str = _extract_season_from_metadata(metadata)
+    title = f"Standings ({season_str})" if season_str else "Standings"
+
+    table = Table(title=title, box=box.HORIZONTALS, show_header=True)
+    table.add_column("", justify="right")
+    table.add_column("Team", justify="left")
+    table.add_column("Points", justify="right")
+    table.add_column("Played", justify="right")
+    table.add_column("W", justify="right")
+    table.add_column("D", justify="right")
+    table.add_column("L", justify="right")
+    table.add_column("GF", justify="right")
+    table.add_column("GA", justify="right")
+    table.add_column("GD", justify="center")
+
+    for _, row in df.iterrows():
+        table.add_row(
+            str(row["position"]),
+            row["team"],
+            str(row["points"]),
+            str(row["played"]),
+            str(row["won"]),
+            str(row["draw"]),
+            str(row["lost"]),
+            str(row["goals_for"]),
+            str(row["goals_against"]),
+            str(row["goal_difference"]),
+        )
+
+    console.print(table)
+
+
 def print_leagues(console: Console):
-    console.print("")
     table = Table(title="Supported Leagues", box=box.HORIZONTALS)
     table.add_column("Code")
     table.add_column("Name")
     for league in SUPPORTED_LEAGUES:
         table.add_row(league, SUPPORTED_LEAGUES[league]["name"])
     console.print(table)
-    console.print("")
 
 
 # def top_scorers(console: Console, df: pd.DataFrame, title: str):
@@ -210,36 +219,10 @@ class LeagueDashboard:
     def standings(self, league_code: str, df: pd.DataFrame, metadata: Dict):
         self._league_header(league_code)
 
-        season_str = _extract_season_from_metadata(metadata)
-        title = f"Standings ({season_str})" if season_str else "Standings"
-
-        table = Table(title=title, box=box.HORIZONTALS, show_header=True)
-        table.add_column("", justify="right")
-        table.add_column("Team", justify="left")
-        table.add_column("Points", justify="right")
-        table.add_column("Played", justify="right")
-        table.add_column("W", justify="right")
-        table.add_column("D", justify="right")
-        table.add_column("L", justify="right")
-        table.add_column("GF", justify="right")
-        table.add_column("GA", justify="right")
-        table.add_column("GD", justify="center")
-
-        for _, row in df.iterrows():
-            table.add_row(
-                str(row["position"]),
-                row["team"],
-                str(row["points"]),
-                str(row["played"]),
-                str(row["won"]),
-                str(row["draw"]),
-                str(row["lost"]),
-                str(row["goals_for"]),
-                str(row["goals_against"]),
-                str(row["goal_difference"]),
-            )
-
-        self.console.print(table)
+        if df.empty:
+            self.console.print(Text("No standings found ¯\\_(ツ)_/¯", style="italic"))
+        else:
+            print_standings(self.console, df, metadata)
         self.console.print("")
 
     def schedule(self, league_code: str, df: pd.DataFrame):
@@ -253,4 +236,6 @@ class LeagueDashboard:
         self.console.print("")
 
     def leagues(self):
+        self.console.print("")
         print_leagues(self.console)
+        self.console.print("")
