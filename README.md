@@ -1,4 +1,4 @@
-# League Dashboard
+# League Dashboard (lgdash)
 
 Soccer at the command line. ⚽
 

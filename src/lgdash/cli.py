@@ -5,6 +5,7 @@ from .client import FootballDataClient
 from .config import FBD_ENV_VAR
 from .display import LeagueDashboard
 from .leagues import SUPPORTED_LEAGUES, DEFAULT_LEAGUE
+from . import __version__
 
 
 api_key = os.getenv(FBD_ENV_VAR)
@@ -15,6 +16,7 @@ if not api_key:
 
 
 @click.group(invoke_without_command=True)
+@click.version_option(__version__)
 @click.pass_context
 def cli(ctx):
     """CLI App with Default Behavior and Subcommands"""
