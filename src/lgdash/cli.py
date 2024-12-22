@@ -66,10 +66,10 @@ def standings(league):
 
     if league in SUPPORTED_LEAGUES.keys():
         fbd_api = FootballDataClient(api_key)
-        df, _ = fbd_api.get_standings(league=league)
+        df, metadata = fbd_api.get_standings(league=league)
 
         dashboard = LeagueDashboard()
-        dashboard.standings(league, df)
+        dashboard.standings(league, df, metadata=metadata)
     else:
         click.echo(f"League code {league} is not supported.")
 

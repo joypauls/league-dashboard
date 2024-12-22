@@ -39,5 +39,12 @@ Live scores and start times in local system time.
 
 ## Commands
 
+`lgdash today`
+
+`lgdash schedule`
+
+`lgdash standings`
+
+`lgdash leagues`
 
 

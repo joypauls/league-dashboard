@@ -179,7 +179,7 @@ class LeagueDashboard:
     def __init__(self):
         self.console = Console()
 
-    def display_league_header(self, league_code: str):
+    def _league_header(self, league_code: str):
         league_header = (
             SUPPORTED_LEAGUES[league_code]["icon"]
             + " "
@@ -189,17 +189,26 @@ class LeagueDashboard:
         self.console.print("")
 
     def today(self, league_code: str, df: pd.DataFrame):
-        self.display_league_header(league_code)
+        self._league_header(league_code)
         if df.empty:
             self.console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))
         else:
             todays_matches(self.console, df, "Today's Matches")
         self.console.print("")
 
-    def standings(self, league_code: str, df: pd.DataFrame):
-        self.display_league_header(league_code)
+    def standings(self, league_code: str, df: pd.DataFrame, metadata: Dict):
+        self._league_header(league_code)
 
-        table = Table(title="Standings", box=box.HORIZONTALS, show_header=True)
+        season_start_year = metadata["season"]["startDate"][:4]
+        season_end_year = metadata["season"]["endDate"][:4]
+        season = (
+            f"{season_start_year}/{season_end_year}"
+            if season_start_year != season_end_year
+            else season_start_year
+        )
+        title = f"Standings ({season})"
+
+        table = Table(title=title, box=box.HORIZONTALS, show_header=True)
         table.add_column("", justify="right")
         table.add_column("Team", justify="left")
         table.add_column("Points", justify="right")
@@ -229,7 +238,7 @@ class LeagueDashboard:
         self.console.print("")
 
     def schedule(self, league_code: str, df: pd.DataFrame):
-        self.display_league_header(league_code)
+        self._league_header(league_code)
         if df.empty:
             self.console.print(
                 Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic")
