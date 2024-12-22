@@ -26,7 +26,7 @@ FOOTBALLDATA_API_KEY=<your key here>
 
 ### Install
 
-### Use
+### Usage
 
 #### Get Today's Slate of Matches
 

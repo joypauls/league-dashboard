@@ -8,7 +8,7 @@ build:
 
 .PHONY: test
 test:
-	poetry run pytest -v
+	poetry run pytest
 
 
 
