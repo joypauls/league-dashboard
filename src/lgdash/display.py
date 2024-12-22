@@ -5,7 +5,6 @@ from rich.table import Table
 from rich import box
 from rich.text import Text
 
-# from lgdash import __version__ as version
 from .leagues import SUPPORTED_LEAGUES
 
 MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
@@ -94,6 +93,9 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
 def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
     df = df.sort_values(by=["utc_datetime"])
+    # only show upcoming matches
+    # as of now timezones can make today's matches show up otherwise
+    df = df[df["clean_status"] == "Upcoming"]
 
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
 

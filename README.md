@@ -1,3 +1,5 @@
+<!-- [![python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org) -->
+
 # League Dashboard (lgdash)
 
 Soccer at the command line. ⚽
@@ -36,5 +38,6 @@ Live scores and start times in local system time.
 
 
 ## Commands
+
 
 

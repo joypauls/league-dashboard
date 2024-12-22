@@ -10,6 +10,7 @@ from . import __version__
 
 api_key = os.getenv(FBD_ENV_VAR)
 if not api_key:
+    # TODO: fail more gracefully
     raise ValueError(
         f"API key not found. Please set the {FBD_ENV_VAR} environment variable."
     )
