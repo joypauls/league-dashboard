@@ -1,4 +1,4 @@
-<!-- [![python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org) -->
+[![python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org)
 
 # League Dashboard (lgdash)
 
@@ -12,7 +12,6 @@ Soccer at the command line. ⚽
 - Bundesliga (Germany 🇩🇪)
 - Ligue 1 (France 🇫🇷)
 - UEFA Champions League (Europe)
-
 
 ## Quick Start
 

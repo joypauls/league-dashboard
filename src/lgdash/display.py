@@ -10,18 +10,44 @@ from .leagues import SUPPORTED_LEAGUES
 MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
 
 
-def dataframe(console: Console, df: pd.DataFrame, title: str):
-    """
-    Mainly used for interactive debugging and introspection.
-    """
-    table = Table(title=title)
+def _extract_season_from_metadata(metadata: Dict) -> str:
+    season_start_year = metadata["season"]["startDate"][:4]
+    season_end_year = metadata["season"]["endDate"][:4]
+    season = (
+        f"{season_start_year}/{season_end_year}"
+        if season_start_year != season_end_year
+        else season_start_year
+    )
+    return season
 
-    for col in df.columns:
-        table.add_column(col)
-    for _, row in df.iterrows():
-        table.add_row(*[str(x) for x in row])
 
-    console.print(table)
+def _extract_score_from_row(row: pd.Series) -> str:
+    if row["clean_status"] == "Upcoming" or row["clean_status"] == "Postponed":
+        return "-"
+    return f"{row['home_score']} - {row['away_score']}"
+
+
+def _extract_time_from_row(row: pd.Series) -> str:
+    if row["clean_status"] == "Upcoming":
+        return row["local_time"] + " " + row["local_tz"]
+    if row["clean_status"] == "Live":
+        return row["display_minutes"]
+    # FT / HT / Postponed
+    return row["clean_status"]
+
+
+# def dataframe(console: Console, df: pd.DataFrame, title: str):
+#     """
+#     Mainly used for interactive debugging and introspection.
+#     """
+#     table = Table(title=title)
+
+#     for col in df.columns:
+#         table.add_column(col)
+#     for _, row in df.iterrows():
+#         table.add_row(*[str(x) for x in row])
+
+#     console.print(table)
 
 
 def todays_matches(console: Console, df: pd.DataFrame, title: str):
@@ -38,32 +64,26 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
 
     df = _sort_matches(df)
 
-    # all matchdays should be equal in this use case
-    # matchday = df["matchday"].iloc[0]
-    # title = f"{title} (Matchday {matchday})"
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
-
     table.add_column("Home", justify="right")
     table.add_column("Score", justify="center")
     table.add_column("Away", justify="left")
     table.add_column("Time", justify="left")
-    # just for debugging
-    # table.add_column("state", justify="left")
 
     for _, row in df.iterrows():
 
-        score_display = f"{row['home_score']} - {row['away_score']}"
-        time_display = row["display_minutes"]
-        if row["clean_status"] == "Upcoming":
-            score_display = "-"
-            time_display = row["local_time"] + " " + row["local_tz"]
-        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-            time_display = row["clean_status"]
-        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-            time_display = row["clean_status"]
-        if row["clean_status"] == "Postponed":
-            score_display = "-"
-            time_display = "Postponed"
+        score_display = _extract_score_from_row(row)
+        time_display = _extract_time_from_row(row)
+
+        # time_display = row["display_minutes"]
+        # if row["clean_status"] == "Upcoming":
+        #     time_display = row["local_time"] + " " + row["local_tz"]
+        # if row["clean_status"] == "FT" or row["clean_status"] == "HT":
+        #     time_display = row["clean_status"]
+        # if row["clean_status"] == "FT" or row["clean_status"] == "HT":
+        #     time_display = row["clean_status"]
+        # if row["clean_status"] == "Postponed":
+        #     time_display = "Postponed"
 
         # home_display = Text(row["home_team"] + f" ({row["home_team_code"]})")
         # away_display = Text(row["away_team"] + f" ({row["away_team_code"]})")
@@ -98,7 +118,6 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
     df = df[df["clean_status"] == "Upcoming"]
 
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
-
     table.add_column("Home", justify="left")
     table.add_column("Away", justify="left")
     table.add_column("Date", justify="left")
@@ -106,15 +125,7 @@ def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
     for _, row in df.iterrows():
 
-        time_display = row["display_minutes"]
-        if row["clean_status"] == "Upcoming":
-            time_display = row["local_time"] + " " + row["local_tz"]
-        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-            time_display = row["clean_status"]
-        if row["clean_status"] == "FT" or row["clean_status"] == "HT":
-            time_display = row["clean_status"]
-        if row["clean_status"] == "Postponed":
-            time_display = "Postponed"
+        time_display = _extract_time_from_row(row)
 
         home_display = Text(row["home_team"])
         away_display = Text(row["away_team"])
@@ -199,14 +210,8 @@ class LeagueDashboard:
     def standings(self, league_code: str, df: pd.DataFrame, metadata: Dict):
         self._league_header(league_code)
 
-        season_start_year = metadata["season"]["startDate"][:4]
-        season_end_year = metadata["season"]["endDate"][:4]
-        season = (
-            f"{season_start_year}/{season_end_year}"
-            if season_start_year != season_end_year
-            else season_start_year
-        )
-        title = f"Standings ({season})"
+        season_str = _extract_season_from_metadata(metadata)
+        title = f"Standings ({season_str})" if season_str else "Standings"
 
         table = Table(title=title, box=box.HORIZONTALS, show_header=True)
         table.add_column("", justify="right")

@@ -206,7 +206,6 @@ class FootballDataClient:
             params["dateFrom"] = start_date
             params["dateTo"] = end_date
         data = self.make_request(endpoint, params=params)
-        # print(data)
 
         # import pickle
 
