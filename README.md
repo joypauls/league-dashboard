@@ -37,25 +37,55 @@ export FOOTBALLDATA_API_TOKEN=<token>
 
 ### Install
 
-### Usage
+Available on PyPI.
 
-#### Get Today's Slate of Matches
+`pip install lgdash`
+
+### How to Use
+
+#### Today's Slate of Matches
 
 Live scores and start times in local system time.
 
-#### Get Upcoming Matches
+Example: Premier League (Default)  
+`lgdash today`, or `lgdash today -l PL`
 
-#### Get Standings
+Example: Serie A  
+`lgdash today -l SA`
+
+#### Standings
+
+Current state of a league's standings with some statistics for each team.
+
+Example: Premier League (Default)  
+`lgdash standings`
+
+Example: Serie A  
+`lgdash standings -l SA`
+
+#### Help
+
+Each command and subcommand supports the `--help` option, for example:
+
+`lgdash --help` and `lgdash today --help`
 
 
 ## Commands
 
 `lgdash today`
+- get live scores and today's scheduled matches
+- `-l, --league`: specify a league code
 
 `lgdash schedule`
+- get upcoming matches
+- `-l, --league`: specify a league code
+- `-d, --days`: specify number of days in future
 
 `lgdash standings`
+- get league standings
+- `-l, --league`: specify a league code
 
 `lgdash leagues`
+- get all supported league codes
 
 
