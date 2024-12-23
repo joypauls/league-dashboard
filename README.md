@@ -1,4 +1,7 @@
 [![python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org)
+[![PyPI version](https://badge.fury.io/py/lgdash.svg)](https://badge.fury.io/py/lgdash)
+
+⚠️ This project is currently under active development and considered experimental.
 
 # League Dashboard (lgdash)
 
