@@ -4,7 +4,15 @@
 
 Soccer at the command line. ⚽
 
-## Currently Supported Leagues
+Under the hood this app is calling the [football-data.org](https://www.football-data.org/) API, so an API key is required. Register for one [here](https://www.football-data.org/pricing) to get one. 
+
+## Features
+
+- live scores
+- league standings
+- league schedules
+
+### Currently Supported Leagues
 
 - Premier League (England 🏴󠁧󠁢󠁥󠁮󠁧󠁿)
 - La Liga (Spain 🇪🇸)
@@ -17,7 +25,7 @@ Soccer at the command line. ⚽
 
 ### Get API Key
 
-Currently requires a football-data.org API key.
+If you don't have one, register for an API key [here](https://www.football-data.org/pricing).
 
 ```
 FOOTBALLDATA_API_KEY=<your key here>

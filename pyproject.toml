@@ -2,8 +2,10 @@
 name = "lgdash"
 version = "0.1.0"
 description = "Command line tool for displaying live soccer scores and statistics."
-authors = ["joypauls <joypaulsen3@gmail.com>"]
+authors = ["Joy Paulsen <joypaulsen3@gmail.com>"]
 readme = "README.md"
+homepage = "https://github.com/joypauls/league-dashboard"
+repository = "https://github.com/joypauls/league-dashboard"
 
 [tool.poetry.scripts]
 lgdash = "lgdash.cli:cli"

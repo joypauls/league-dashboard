@@ -1,7 +1,7 @@
 from lgdash.leagues import SUPPORTED_LEAGUES
 
 
-# tests consistency of dictionary keys, more like data validation?
+# tests consistency of dictionary keys, more like data validation
 def test_supported_leagues():
     required_keys = ["icon", "name"]
     has_required_keys = all(
