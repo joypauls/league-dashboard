@@ -43,14 +43,14 @@ class FootballDataClientError(Exception):
 
 
 class FootballDataClient:
-    def __init__(self, api_key: str):
+    def __init__(self, api_token: str):
         """
         Initialize the football-data.org API client.
 
         :param api_key: Your API key for football-data.org
         """
         self.base_url = FBD_BASE_URL
-        self.api_key = api_key
+        self.api_token = api_token
 
     def _build_matches_df(self, matches: List[Dict]) -> pd.DataFrame:
         matches_flat = []
@@ -162,7 +162,7 @@ class FootballDataClient:
         """
         if params is None:
             params = {}
-        headers = {"X-Auth-Token": self.api_key}
+        headers = {"X-Auth-Token": self.api_token}
         url = f"{self.base_url}/{endpoint}"
 
         try:

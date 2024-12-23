@@ -4,7 +4,7 @@
 
 Soccer at the command line. ⚽
 
-Under the hood this app is calling the [football-data.org](https://www.football-data.org/) API, so an API key is required. Register for one [here](https://www.football-data.org/pricing) to get one. 
+Under the hood the app is calling the [football-data.org](https://www.football-data.org/) API, so an API token from that service is required. Register [here](https://www.football-data.org/pricing) to get one. 
 
 ## Features
 
@@ -23,12 +23,13 @@ Under the hood this app is calling the [football-data.org](https://www.football-
 
 ## Quick Start
 
-### Get API Key
+### Get API Token
 
-If you don't have one, register for an API key [here](https://www.football-data.org/pricing).
+If you don't have one, register for an API token [here](https://www.football-data.org/pricing).
 
+Then add this line with your token to `.zshrc` or another appropriate startup file.
 ```
-FOOTBALLDATA_API_KEY=<your key here>
+export FOOTBALLDATA_API_TOKEN=<token>
 ```
 
 ### Install

@@ -1,11 +1,13 @@
 [tool.poetry]
 name = "lgdash"
 version = "0.1.0"
-description = "Command line tool for displaying live soccer scores and statistics."
+description = "A command line tool for displaying live soccer scores and statistics."
 authors = ["Joy Paulsen <joypaulsen3@gmail.com>"]
+license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/joypauls/league-dashboard"
 repository = "https://github.com/joypauls/league-dashboard"
+keywords = ["cli", "soccer", "football", "statistics", "scores", "live"]
 
 [tool.poetry.scripts]
 lgdash = "lgdash.cli:cli"
@@ -21,6 +23,7 @@ click = "^8.1.7"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
+twine = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]
