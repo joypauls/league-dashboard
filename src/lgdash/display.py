@@ -36,18 +36,18 @@ def _extract_time_from_row(row: pd.Series) -> str:
     return row["clean_status"]
 
 
-# def dataframe(console: Console, df: pd.DataFrame, title: str):
-#     """
-#     Mainly used for interactive debugging and introspection.
-#     """
-#     table = Table(title=title)
+def print_dataframe(console: Console, df: pd.DataFrame, title: str):
+    """
+    Mainly used for interactive debugging and introspection.
+    """
+    table = Table(title=title)
 
-#     for col in df.columns:
-#         table.add_column(col)
-#     for _, row in df.iterrows():
-#         table.add_row(*[str(x) for x in row])
+    for col in df.columns:
+        table.add_column(col)
+    for _, row in df.iterrows():
+        table.add_row(*[str(x) for x in row])
 
-#     console.print(table)
+    console.print(table)
 
 
 def todays_matches(console: Console, df: pd.DataFrame, title: str):
@@ -163,10 +163,22 @@ def print_standings(console: Console, df: pd.DataFrame, metadata: Dict):
 
 def print_leagues(console: Console):
     table = Table(title="Supported Leagues", box=box.HORIZONTALS)
-    table.add_column("Code")
     table.add_column("Name")
+    table.add_column("Code")
     for league in SUPPORTED_LEAGUES:
-        table.add_row(league, SUPPORTED_LEAGUES[league]["name"])
+        table.add_row(SUPPORTED_LEAGUES[league]["name"], league)
+    console.print(table)
+
+
+def print_teams(console: Console, df: pd.DataFrame):
+    table = Table(title="Teams", box=box.HORIZONTALS)
+    table.add_column("Name")
+    table.add_column("ID")
+    for _, row in df.iterrows():
+        table.add_row(
+            row["team"],
+            str(row["id"]),
+        )
     console.print(table)
 
 
@@ -206,10 +218,10 @@ class LeagueDashboard:
             + SUPPORTED_LEAGUES[league_code]["name"]
         )
         self.console.print(Text(league_header))
-        self.console.print("")
 
     def today(self, league_code: str, df: pd.DataFrame):
         self._league_header(league_code)
+        self.console.print("")
         if df.empty:
             self.console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))
         else:
@@ -218,7 +230,7 @@ class LeagueDashboard:
 
     def standings(self, league_code: str, df: pd.DataFrame, metadata: Dict):
         self._league_header(league_code)
-
+        self.console.print("")
         if df.empty:
             self.console.print(Text("No standings found ¯\\_(ツ)_/¯", style="italic"))
         else:
@@ -227,6 +239,7 @@ class LeagueDashboard:
 
     def schedule(self, league_code: str, df: pd.DataFrame):
         self._league_header(league_code)
+        self.console.print("")
         if df.empty:
             self.console.print(
                 Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic")
@@ -238,4 +251,10 @@ class LeagueDashboard:
     def leagues(self):
         self.console.print("")
         print_leagues(self.console)
+        self.console.print("")
+
+    def teams(self, league_code: str, df: pd.DataFrame):
+        self._league_header(league_code)
+        self.console.print("")
+        print_teams(self.console, df)
         self.console.print("")

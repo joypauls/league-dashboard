@@ -131,6 +131,21 @@ class FootballDataClient:
 
         return df
 
+    def _build_teams_df(self, teams: List[Dict]) -> pd.DataFrame:
+        teams_flat = []
+        for team in teams:
+            teams_flat.append(
+                {
+                    "id": team["id"],
+                    "team": team["shortName"],
+                    "team_long": team["name"],
+                    "tla": team["tla"],
+                }
+            )
+        df = pd.DataFrame(teams_flat)
+
+        return df
+
     # def _build_scorers_df(self, scorers: List[Dict]) -> pd.DataFrame:
     #     scorers_flat = []
     #     for scorer in scorers:
@@ -249,6 +264,27 @@ class FootballDataClient:
                 metadata[key] = data[key]
 
         return self._build_standings_df(standings), metadata
+
+    def get_teams(self, league: str = "PL") -> Tuple[pd.DataFrame, Dict]:
+        """
+        Fetch and process the most current league standings.
+
+        :param season: Season/Year (e.g. 2024 for 2024/2025)
+        :return: DataFrame containing standings
+        """
+        endpoint = f"/v4/competitions/{league}/teams"
+        params = {}
+        data = self.make_request(endpoint, params=params)
+
+        teams = data.get("teams", [])
+        logger.debug(f"Retrieved teams with {len(teams)} teams")
+
+        metadata = {}
+        for key in data:
+            if key != "teams":
+                metadata[key] = data[key]
+
+        return self._build_teams_df(teams), metadata
 
     # def get_scorers(
     #     self, limit: Optional[int] = 10

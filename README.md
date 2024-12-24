@@ -5,7 +5,7 @@
 
 # League Dashboard (lgdash)
 
-Soccer at the command line. ⚽
+Soccer/football at the command line. ⚽
 
 Under the hood the app is calling the [football-data.org](https://www.football-data.org/) API, so an API token from that service is required. Register [here](https://www.football-data.org/pricing) to get one. 
 
