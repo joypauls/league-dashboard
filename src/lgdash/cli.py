@@ -27,7 +27,7 @@ def _filter_to_team(df: pd.DataFrame, team: Optional[str]) -> pd.DataFrame:
     if team:
         return df[
             (df["home_team"].str.lower() == team_lower)
-            | (df["away_team"].str.lower() == team)
+            | (df["away_team"].str.lower() == team_lower)
         ]
     return df
 
@@ -76,6 +76,7 @@ def schedule(league, team, days):
             start_date=start_date, end_date=end_date, league=league
         )
 
+        # okay if df becomes empty, dashboard handles that case
         if team:
             df = _filter_to_team(df, team)
 
