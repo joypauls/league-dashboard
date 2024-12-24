@@ -1,6 +1,8 @@
 import click
 import os
 from datetime import datetime, timedelta
+import pandas as pd
+from typing import Optional
 
 from .client import FootballDataClient
 from .config import FBD_ENV_VAR
@@ -17,6 +19,17 @@ if not api_token:
     )
 
 dashboard = LeagueDashboard()
+
+
+def _filter_to_team(df: pd.DataFrame, team: Optional[str]) -> pd.DataFrame:
+    # TODO: normalize team names to allow for case-insensitive matching
+    team_lower = team.lower()
+    if team:
+        return df[
+            (df["home_team"].str.lower() == team_lower)
+            | (df["away_team"].str.lower() == team)
+        ]
+    return df
 
 
 @click.group(invoke_without_command=True)
@@ -47,9 +60,10 @@ def today(league):
 
 
 @cli.command()
-@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code")
-@click.option("--days", "-d", default=7, help="Days in future.")
-def schedule(league, days):
+@click.option("--league", "-l", type=str, default=DEFAULT_LEAGUE, help="League code")
+@click.option("--team", "-t", type=str, help="Team name, as it appears in the app")
+@click.option("--days", "-d", type=int, default=7, help="Days in future")
+def schedule(league, team, days):
     """
     Scheduled matches after today. Defaults to next 7 days.
     """
@@ -61,6 +75,9 @@ def schedule(league, days):
         df, _ = client.get_matches(
             start_date=start_date, end_date=end_date, league=league
         )
+
+        if team:
+            df = _filter_to_team(df, team)
 
         dashboard.schedule(league, df)
     else:
@@ -90,19 +107,19 @@ def leagues():
     dashboard.leagues()
 
 
-@cli.command()
-@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
-def teams(league):
-    """
-    List of teams in the league for reference.
-    """
-    if league in SUPPORTED_LEAGUES.keys():
-        client = FootballDataClient(api_token)
-        df, metadata = client.get_teams(league=league)
+# @cli.command()
+# @click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
+# def teams(league):
+#     """
+#     List of teams in the league for reference.
+#     """
+#     if league in SUPPORTED_LEAGUES.keys():
+#         client = FootballDataClient(api_token)
+#         df, metadata = client.get_teams(league=league)
 
-        dashboard.teams(league, df)
-    else:
-        click.echo(f"League code {league} is not supported.")
+#         dashboard.teams(league, df)
+#     else:
+#         click.echo(f"League code {league} is not supported.")
 
 
 if __name__ == "__main__":
