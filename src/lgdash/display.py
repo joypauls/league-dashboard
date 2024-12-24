@@ -100,7 +100,7 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
 
 def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
-    df = df.sort_values(by=["utc_datetime"])
+    df.sort_values(by=["utc_datetime"], inplace=True)
     # only show upcoming matches
     # as of now timezones can make today's matches show up otherwise
     df = df[df["clean_status"] == "Upcoming"]
@@ -170,16 +170,17 @@ def print_leagues(console: Console):
     console.print(table)
 
 
-# def print_teams(console: Console, df: pd.DataFrame):
-#     table = Table(title="Teams", box=box.HORIZONTALS)
-#     table.add_column("Name")
-#     table.add_column("ID")
-#     for _, row in df.iterrows():
-#         table.add_row(
-#             row["team"],
-#             str(row["id"]),
-#         )
-#     console.print(table)
+def print_teams(console: Console, df: pd.DataFrame):
+
+    df.sort_values(by=["team"], inplace=True)
+
+    table = Table(title="Teams", box=box.HORIZONTALS)
+    table.add_column("Name")
+    table.add_column("Full Name")
+    table.add_column("Country")
+    for _, row in df.iterrows():
+        table.add_row(row["team"], row["team_long"], row["area"])
+    console.print(table)
 
 
 # def top_scorers(console: Console, df: pd.DataFrame, title: str):
@@ -253,8 +254,8 @@ class LeagueDashboard:
         print_leagues(self.console)
         self.console.print("")
 
-    # def teams(self, league_code: str, df: pd.DataFrame):
-    #     self._league_header(league_code)
-    #     self.console.print("")
-    #     print_teams(self.console, df)
-    #     self.console.print("")
+    def teams(self, league_code: str, df: pd.DataFrame):
+        self._league_header(league_code)
+        self.console.print("")
+        print_teams(self.console, df)
+        self.console.print("")

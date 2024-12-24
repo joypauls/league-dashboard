@@ -65,7 +65,7 @@ def today(league):
 @click.option("--days", "-d", type=int, default=7, help="Days in future")
 def schedule(league, team, days):
     """
-    Scheduled matches after today. Defaults to next 7 days.
+    Scheduled matches after today. Defaults to next 14 days.
     """
     if league in SUPPORTED_LEAGUES.keys():
         client = FootballDataClient(api_token)
@@ -78,7 +78,7 @@ def schedule(league, team, days):
 
         # okay if df becomes empty, dashboard handles that case
         if team:
-            df = _filter_to_team(df, team)
+            df = df if df.empty else _filter_to_team(df, team)
 
         dashboard.schedule(league, df)
     else:
@@ -108,19 +108,19 @@ def leagues():
     dashboard.leagues()
 
 
-# @cli.command()
-# @click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
-# def teams(league):
-#     """
-#     List of teams in the league for reference.
-#     """
-#     if league in SUPPORTED_LEAGUES.keys():
-#         client = FootballDataClient(api_token)
-#         df, metadata = client.get_teams(league=league)
+@cli.command()
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="")
+def teams(league):
+    """
+    List of teams in the league for reference.
+    """
+    if league in SUPPORTED_LEAGUES.keys():
+        client = FootballDataClient(api_token)
+        df, _ = client.get_teams(league=league)
 
-#         dashboard.teams(league, df)
-#     else:
-#         click.echo(f"League code {league} is not supported.")
+        dashboard.teams(league, df)
+    else:
+        click.echo(f"League code {league} is not supported.")
 
 
 if __name__ == "__main__":

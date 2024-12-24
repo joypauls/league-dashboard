@@ -140,6 +140,7 @@ class FootballDataClient:
                     "team": team["shortName"],
                     "team_long": team["name"],
                     "tla": team["tla"],
+                    "area": team["area"]["name"],
                 }
             )
         df = pd.DataFrame(teams_flat)
@@ -266,26 +267,26 @@ class FootballDataClient:
 
         return self._build_standings_df(standings), metadata
 
-    # def get_teams(self, league: str = "PL") -> Tuple[pd.DataFrame, Dict]:
-    #     """
-    #     Fetch and process the most current league standings.
+    def get_teams(self, league: str = "PL") -> Tuple[pd.DataFrame, Dict]:
+        """
+        Fetch and process the most current league standings.
 
-    #     :param season: Season/Year (e.g. 2024 for 2024/2025)
-    #     :return: DataFrame containing standings
-    #     """
-    #     endpoint = f"/v4/competitions/{league}/teams"
-    #     params = {}
-    #     data = self.make_request(endpoint, params=params)
+        :param season: Season/Year (e.g. 2024 for 2024/2025)
+        :return: DataFrame containing standings
+        """
+        endpoint = f"/v4/competitions/{league}/teams"
+        params = {}
+        data = self.make_request(endpoint, params=params)
 
-    #     teams = data.get("teams", [])
-    #     logger.debug(f"Retrieved teams with {len(teams)} teams")
+        teams = data.get("teams", [])
+        logger.debug(f"Retrieved teams with {len(teams)} teams")
 
-    #     metadata = {}
-    #     for key in data:
-    #         if key != "teams":
-    #             metadata[key] = data[key]
+        metadata = {}
+        for key in data:
+            if key != "teams":
+                metadata[key] = data[key]
 
-    #     return self._build_teams_df(teams), metadata
+        return self._build_teams_df(teams), metadata
 
     # def get_scorers(
     #     self, limit: Optional[int] = 10
