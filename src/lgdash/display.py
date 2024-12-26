@@ -52,17 +52,18 @@ def print_dataframe(console: Console, df: pd.DataFrame, title: str):
 
 def todays_matches(console: Console, df: pd.DataFrame, title: str):
 
-    def _sort_matches(matches_df: pd.DataFrame) -> pd.DataFrame:
-        return matches_df.sort_values(
-            by=["clean_status", "local_datetime", "home_team"],
-            key=lambda col: (
-                col
-                if col.name == "local_datetime" or col.name == "home_team"
-                else col.apply(lambda x: MATCH_STATUS_ORDER.index(x))
-            ),
-        )
+    # def _sort_matches(matches_df: pd.DataFrame) -> pd.DataFrame:
+    #     return matches_df.sort_values(
+    #         by=["clean_status", "local_datetime", "home_team"],
+    #         key=lambda col: (
+    #             col
+    #             if col.name == "local_datetime" or col.name == "home_team"
+    #             else col.apply(lambda x: MATCH_STATUS_ORDER.index(x))
+    #         ),
+    #     )
+    # df = _sort_matches(df)
 
-    df = _sort_matches(df)
+    df.sort_values(by=["utc_datetime", "home_team"], inplace=True)
 
     table = Table(title=title, box=box.HORIZONTALS, show_header=True)
     table.add_column("Home", justify="right")

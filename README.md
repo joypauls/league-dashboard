@@ -79,6 +79,7 @@ Each command and subcommand supports the `--help` option, for example:
 `lgdash schedule`
 - get upcoming matches
 - `-l, --league`: specify a league code
+- `-t, --team`: specify a team name
 - `-d, --days`: specify number of days in future
 
 `lgdash standings`
