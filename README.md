@@ -7,6 +7,8 @@
 
 Soccer/football at the command line. ⚽
 
+<img width="453" alt="Screenshot 2024-12-26 at 10 54 29 AM" src="https://github.com/user-attachments/assets/3f5b1f65-ae1f-4e1a-8f0f-d644bfd1ede2" />
+
 Under the hood the app is calling the [football-data.org](https://www.football-data.org/) API, so an API token from that service is required. Register [here](https://www.football-data.org/pricing) to get one. 
 
 ## Features
