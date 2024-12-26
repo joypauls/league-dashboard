@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lgdash"
-version = "0.1.2"
+version = "0.1.3"
 description = "A command line tool for displaying live soccer scores and statistics."
 authors = ["Joy Paulsen <joypaulsen3@gmail.com>"]
 license = "MIT"

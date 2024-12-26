@@ -67,7 +67,7 @@ Example: Serie A
 
 Each command and subcommand supports the `--help` option, for example:
 
-`lgdash --help` and `lgdash today --help`
+`lgdash --help` and `lgdash --help`
 
 
 ## Commands
