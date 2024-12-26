@@ -35,28 +35,37 @@ def _filter_to_team(df: pd.DataFrame, team: Optional[str]) -> pd.DataFrame:
 @click.group(invoke_without_command=True)
 @click.version_option(__version__)
 @click.pass_context
-def cli(ctx):
+@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code.")
+def cli(ctx, league):
     """
     Command line tool for displaying live soccer scores and statistics.
+    Default behavior is to show today's matches.
     """
     if not ctx.invoked_subcommand:
-        click.echo("No subcommand provided. Use --help for available commands.")
+        if league in SUPPORTED_LEAGUES.keys():
+            client = FootballDataClient(api_token)
+            today = datetime.now().strftime("%Y-%m-%d")
+            df, _ = client.get_matches(start_date=today, end_date=today, league=league)
+
+            dashboard.today(league, df)
+        else:
+            click.echo(f"League code {league} is not supported.")
 
 
-@cli.command()
-@click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code.")
-def today(league):
-    """
-    Live scores, results, and start times for today's matches.
-    """
-    if league in SUPPORTED_LEAGUES.keys():
-        client = FootballDataClient(api_token)
-        today = datetime.now().strftime("%Y-%m-%d")
-        df, _ = client.get_matches(start_date=today, end_date=today, league=league)
+# @cli.command()
+# @click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code.")
+# def today(league):
+#     """
+#     Live scores, results, and start times for today's matches.
+#     """
+#     if league in SUPPORTED_LEAGUES.keys():
+#         client = FootballDataClient(api_token)
+#         today = datetime.now().strftime("%Y-%m-%d")
+#         df, _ = client.get_matches(start_date=today, end_date=today, league=league)
 
-        dashboard.today(league, df)
-    else:
-        click.echo(f"League code {league} is not supported.")
+#         dashboard.today(league, df)
+#     else:
+#         click.echo(f"League code {league} is not supported.")
 
 
 @cli.command()

@@ -1,7 +1,7 @@
 [![python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org)
 [![PyPI version](https://badge.fury.io/py/lgdash.svg)](https://badge.fury.io/py/lgdash)
 
-⚠️ This project is currently under active development and considered experimental.
+⚠️ This project is currently under active development and considered experimental (all 0.1.x releases).
 
 # League Dashboard (lgdash)
 
@@ -48,10 +48,10 @@ Available on PyPI.
 Live scores and start times in local system time.
 
 Example: Premier League (Default)  
-`lgdash today`, or `lgdash today -l PL`
+`lgdash`, or `lgdash -l PL`
 
 Example: Serie A  
-`lgdash today -l SA`
+`lgdash -l SA`
 
 #### Standings
 
@@ -72,7 +72,7 @@ Each command and subcommand supports the `--help` option, for example:
 
 ## Commands
 
-`lgdash today`
+`lgdash`
 - get live scores and today's scheduled matches
 - `-l, --league`: specify a league code
 
