@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 from typing import Optional
 
-# import subprocess
-
 from lgdash.client import FootballDataClient
 from lgdash.config import FBD_ENV_VAR
 from lgdash.display import LeagueDashboard
