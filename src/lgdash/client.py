@@ -106,6 +106,7 @@ class FootballDataClient:
                     "position": team["position"],
                     "team": team["team"]["shortName"],
                     "tla": team["team"]["tla"],
+                    "crest": team["team"]["crest"],
                     "points": team["points"],
                     "played": team["playedGames"],
                     "won": team["won"],

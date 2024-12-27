@@ -91,11 +91,4 @@ Each command and subcommand supports the `--help` option, for example:
 `lgdash leagues`
 - get all supported league codes
 
-**Experimental**:
-
-This is an experimental feature.
-
-`lgdash server`
-- run a local web server for a browser-based experience
-
 

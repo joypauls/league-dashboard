@@ -3,13 +3,14 @@ import os
 from datetime import datetime, timedelta
 import pandas as pd
 from typing import Optional
-import subprocess
 
-from .client import FootballDataClient
-from .config import FBD_ENV_VAR
-from .display import LeagueDashboard
-from .leagues import SUPPORTED_LEAGUES, DEFAULT_LEAGUE
-from . import __version__
+# import subprocess
+
+from lgdash.client import FootballDataClient
+from lgdash.config import FBD_ENV_VAR
+from lgdash.display import LeagueDashboard
+from lgdash.leagues import SUPPORTED_LEAGUES, DEFAULT_LEAGUE
+from lgdash import __version__
 
 # TODO: should move this logic so user can use --help without the API key
 api_token = os.getenv(FBD_ENV_VAR)
@@ -18,7 +19,7 @@ if not api_token:
     raise ValueError(
         f"API token not found. Please set the {FBD_ENV_VAR} environment variable."
     )
-
+client = FootballDataClient(api_token)
 dashboard = LeagueDashboard()
 
 
@@ -44,7 +45,6 @@ def cli(ctx, league):
     """
     if not ctx.invoked_subcommand:
         if league in SUPPORTED_LEAGUES.keys():
-            client = FootballDataClient(api_token)
             today = datetime.now().strftime("%Y-%m-%d")
             df, _ = client.get_matches(start_date=today, end_date=today, league=league)
 
@@ -62,7 +62,6 @@ def schedule(league, team, days):
     Scheduled matches after today. Defaults to next 14 days.
     """
     if league in SUPPORTED_LEAGUES.keys():
-        client = FootballDataClient(api_token)
         now = datetime.now()
         start_date = now.strftime("%Y-%m-%d")
         end_date = (now + timedelta(days=days)).strftime("%Y-%m-%d")
@@ -86,7 +85,6 @@ def standings(league):
     Current standings for the league.
     """
     if league in SUPPORTED_LEAGUES.keys():
-        client = FootballDataClient(api_token)
         df, metadata = client.get_standings(league=league)
 
         dashboard.standings(league, df, metadata=metadata)
@@ -109,7 +107,6 @@ def teams(league):
     List of teams in the league for reference.
     """
     if league in SUPPORTED_LEAGUES.keys():
-        client = FootballDataClient(api_token)
         df, _ = client.get_teams(league=league)
 
         dashboard.teams(league, df)
@@ -122,20 +119,20 @@ def teams(league):
 ###########
 
 
-@cli.command()
-def server():
-    """Start a web server for browser-based experience."""
-    # Path to the streamlit app script
-    script_path = os.path.join(os.path.dirname(__file__), "app.py")
-    try:
-        subprocess.run(["streamlit", "run", script_path], check=True)
-    except FileNotFoundError:
-        click.echo(
-            "Streamlit is not installed. Please install it with:\n"
-            "pip install lgdash[web]"
-        )
-    except subprocess.CalledProcessError as e:
-        click.echo(f"Failed to start app: {e}")
+# @cli.command()
+# def server():
+#     """Start a web server for browser-based experience."""
+#     # Path to the streamlit app script
+#     script_path = os.path.join(os.path.dirname(__file__), "app.py")
+#     try:
+#         subprocess.run(["streamlit", "run", script_path], check=True)
+#     except FileNotFoundError:
+#         click.echo(
+#             "Streamlit is not installed. Please install it with:\n"
+#             "pip install lgdash[web]"
+#         )
+#     except subprocess.CalledProcessError as e:
+#         click.echo(f"Failed to start app: {e}")
 
 
 if __name__ == "__main__":

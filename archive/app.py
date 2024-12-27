@@ -16,7 +16,7 @@ if not api_token:
 client = FootballDataClient(api_token)
 
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=120)
 def fetch_standings(league: str) -> pd.DataFrame:
     """
     Fetch league data from an API.
@@ -34,5 +34,13 @@ st.sidebar.title("Controls")
 league = st.sidebar.selectbox("Select a League", options=SUPPORTED_LEAGUES.keys())
 
 st.write(f"### {SUPPORTED_LEAGUES[league]['icon']} {SUPPORTED_LEAGUES[league]['name']}")
-data = fetch_standings(league)
-st.dataframe(data, hide_index=True)
+df = fetch_standings(league)
+event = st.dataframe(
+    df, hide_index=True, selection_mode="single-row", on_select="rerun"
+)
+
+row = event.selection.rows
+filtered_df = df.iloc[row]
+# if not filtered_df.empty:
+#     st.write(filtered_df["team"].values[0])
+#     st.image(filtered_df["crest"].values[0], width=50)
