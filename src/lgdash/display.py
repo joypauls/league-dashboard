@@ -7,7 +7,7 @@ from rich.text import Text
 
 from .leagues import SUPPORTED_LEAGUES
 
-MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
+# MATCH_STATUS_ORDER = ["Live", "HT", "FT", "Upcoming", "Postponed"]
 
 
 def _extract_season_from_metadata(metadata: Dict) -> str:
@@ -50,7 +50,7 @@ def print_dataframe(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
-def todays_matches(console: Console, df: pd.DataFrame, title: str):
+def print_todays_matches(console: Console, df: pd.DataFrame, title: str):
 
     # def _sort_matches(matches_df: pd.DataFrame) -> pd.DataFrame:
     #     return matches_df.sort_values(
@@ -99,7 +99,7 @@ def todays_matches(console: Console, df: pd.DataFrame, title: str):
     console.print(table)
 
 
-def upcoming_matches(console: Console, df: pd.DataFrame, title: str):
+def print_upcoming_matches(console: Console, df: pd.DataFrame, title: str):
 
     df.sort_values(by=["utc_datetime"], inplace=True)
     # only show upcoming matches
@@ -227,7 +227,7 @@ class LeagueDashboard:
         if df.empty:
             self.console.print(Text("No matches today ¯\\_(ツ)_/¯", style="italic"))
         else:
-            todays_matches(self.console, df, "Today's Matches")
+            print_todays_matches(self.console, df, "Today's Matches")
         self.console.print("")
 
     def standings(self, league_code: str, df: pd.DataFrame, metadata: Dict):
@@ -247,7 +247,7 @@ class LeagueDashboard:
                 Text("No upcoming matches found ¯\\_(ツ)_/¯", style="italic")
             )
         else:
-            upcoming_matches(self.console, df, "Upcoming Matches")
+            print_upcoming_matches(self.console, df, "Upcoming Matches")
         self.console.print("")
 
     def leagues(self):

@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 import pandas as pd
 from typing import Optional
+import subprocess
 
 from .client import FootballDataClient
 from .config import FBD_ENV_VAR
@@ -50,22 +51,6 @@ def cli(ctx, league):
             dashboard.today(league, df)
         else:
             click.echo(f"League code {league} is not supported.")
-
-
-# @cli.command()
-# @click.option("--league", "-l", default=DEFAULT_LEAGUE, help="League code.")
-# def today(league):
-#     """
-#     Live scores, results, and start times for today's matches.
-#     """
-#     if league in SUPPORTED_LEAGUES.keys():
-#         client = FootballDataClient(api_token)
-#         today = datetime.now().strftime("%Y-%m-%d")
-#         df, _ = client.get_matches(start_date=today, end_date=today, league=league)
-
-#         dashboard.today(league, df)
-#     else:
-#         click.echo(f"League code {league} is not supported.")
 
 
 @cli.command()
@@ -130,6 +115,27 @@ def teams(league):
         dashboard.teams(league, df)
     else:
         click.echo(f"League code {league} is not supported.")
+
+
+###########
+# Web App #
+###########
+
+
+@cli.command()
+def server():
+    """Start a web server for browser-based experience."""
+    # Path to the streamlit app script
+    script_path = os.path.join(os.path.dirname(__file__), "app.py")
+    try:
+        subprocess.run(["streamlit", "run", script_path], check=True)
+    except FileNotFoundError:
+        click.echo(
+            "Streamlit is not installed. Please install it with:\n"
+            "pip install lgdash[web]"
+        )
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Failed to start app: {e}")
 
 
 if __name__ == "__main__":
