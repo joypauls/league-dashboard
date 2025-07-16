@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 import pandas as pd
 from typing import Optional
+import subprocess
 
 from lgdash.client import FootballDataClient
 from lgdash.config import FBD_ENV_VAR
@@ -117,20 +118,19 @@ def teams(league):
 ###########
 
 
-# @cli.command()
-# def server():
-#     """Start a web server for browser-based experience."""
-#     # Path to the streamlit app script
-#     script_path = os.path.join(os.path.dirname(__file__), "app.py")
-#     try:
-#         subprocess.run(["streamlit", "run", script_path], check=True)
-#     except FileNotFoundError:
-#         click.echo(
-#             "Streamlit is not installed. Please install it with:\n"
-#             "pip install lgdash[web]"
-#         )
-#     except subprocess.CalledProcessError as e:
-#         click.echo(f"Failed to start app: {e}")
+@cli.command()
+def server():
+    """Start a web server for browser-based experience."""
+    script_path = os.path.join(os.path.dirname(__file__), "app.py")
+    try:
+        subprocess.run(["streamlit", "run", script_path], check=True)
+    except FileNotFoundError:
+        click.echo(
+            "Streamlit is not installed. Please install it with:\n"
+            "pip install lgdash[web]"
+        )
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Failed to start app: {e}")
 
 
 if __name__ == "__main__":

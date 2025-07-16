@@ -28,13 +28,13 @@ Under the hood the app is calling the [football-data.org](https://www.football-d
 
 ## Quick Start
 
-### Get API Token
+### Get API Key
 
-If you don't have one, register for an API token [here](https://www.football-data.org/pricing).
+If you don't have one, register for an API key [here](https://www.football-data.org/pricing).
 
 Then add this line with your token to `.zshrc` or another appropriate startup file.
 ```
-export FOOTBALLDATA_API_TOKEN=<token>
+export FOOTBALLDATA_API_KEY=<token>
 ```
 
 ### Install
